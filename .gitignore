@@ -1,0 +1,20 @@
+# IDE
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Venv
+venv/
+
+# Pip
+dist/
+*.egg-info/
+
+# PyTest
+.eggs/
+.pytest_cache/
+
+# Mac
+.DS_Store
