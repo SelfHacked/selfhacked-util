@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 
 
 def mkdir(path, *paths):
@@ -15,3 +16,14 @@ def mkdir(path, *paths):
     basedir = os.path.dirname(path)
     mkdir(basedir)
     os.mkdir(path)
+
+
+@contextmanager
+def cd(path):
+    cwd = os.path.abspath(os.getcwd())
+    target = os.path.abspath(path)
+    os.chdir(target)
+    try:
+        yield
+    finally:
+        os.chdir(cwd)
