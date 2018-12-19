@@ -48,7 +48,8 @@ class SqlQueryCountMiddleWare(object):
         try:
             return self.get_response(request)
         finally:
-            db_logger.debug(
-                f"\"{request.method} {request.path}\" "
-                f"{len(queries)} queries took {sum(queries)} seconds"
-            )
+            if queries:
+                db_logger.debug(
+                    f"\"{request.method} {request.path}\" "
+                    f"{len(queries)} queries took {sum(queries)} seconds"
+                )
