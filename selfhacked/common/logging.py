@@ -2,6 +2,18 @@ import os
 
 from selfhacked.util.path import mkdir
 
+FORMATTERS = {
+    'verbose': {
+        'format': '[%(asctime)s %(name)s %(levelname)s] %(message)s'
+    },
+    'db': {
+        # since django.db will output raw queries,
+        # and some are relatively long,
+        # add a blank line after each log entry.
+        'format': '%(message)s\n',
+    },
+}
+
 
 def add_rotating_handler(
         LOGGING: dict, BASE_DIR: str,
