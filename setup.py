@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='selfhacked-util',
@@ -18,7 +18,7 @@ setup(
         'pytest',
     ],
 
-    packages=['selfhacked'],
+    packages=find_packages(),
 
     url='https://github.com/SelfHacked/util',
     author='SelfHacked',
