@@ -14,7 +14,8 @@ def mkdir(path, *paths):
     elif os.path.isdir(path):
         return
     basedir = os.path.dirname(path)
-    mkdir(basedir)
+    if basedir not in ['', '.', '/']:
+        mkdir(basedir)
     os.mkdir(path)
 
 

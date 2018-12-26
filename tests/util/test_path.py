@@ -12,9 +12,14 @@ def test_mkdir(tmpdir):
 def test_cd(tmpdir):
     os.chdir(str(tmpdir))
     path = os.path.abspath(os.getcwd())
-    target = os.path.join(path, 'a')
+    target = os.path.join(path, 'd')
     os.mkdir(target)
 
     with cd(target):
         assert os.getcwd() == target
     assert os.getcwd() == path
+
+
+def test_mkdir_relative(tmpdir):
+    with cd(str(tmpdir)):
+        mkdir('e')
