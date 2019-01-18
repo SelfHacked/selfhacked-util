@@ -3,5 +3,6 @@ python:
   - "3.6"
 
 script:
+  - pip install -U pip setuptools
   - pip install -e .[test]
   - pytest

@@ -13,8 +13,8 @@ setup(
 
     extras_require={
         'test': [
-            'pytest',
-            'pytest-runner',
+            'pytest>=4',
+            'pytest-runner>=4',
             'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
         ],
     },
