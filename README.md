@@ -4,13 +4,13 @@
 
 * Setting up:
 
-        pip install -e .
+        pip install -e .[test]
 
 * Testing:
 
     Local testing:
 
-        python setup.py test
+        pytest
 
     Push your own branch and tests will run on [Travis](https://travis-ci.com/).
 
