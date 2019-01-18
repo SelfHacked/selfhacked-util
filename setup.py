@@ -11,12 +11,13 @@ setup(
         'Django>=1.11',
     ],
 
-    setup_requires=[
-        'pytest-runner',
-    ],
-    tests_require=[
-        'pytest',
-    ],
+    extras_require={
+        'test': [
+            'pytest>=4',
+            'pytest-runner>=4',
+            'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
+        ],
+    },
 
     packages=find_packages(),
     include_package_data=True,
