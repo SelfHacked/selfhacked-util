@@ -20,23 +20,20 @@ def test_partial():
 def test_empty():
     @partial()
     def gen():
-        for i in ():
-            yield i
+        yield from ()
 
     assert gen() == ()
 
     @partial(empty_error=True)
     def gen2():
-        for i in ():
-            yield i
+        yield from ()
 
     with pytest.raises(StopIteration):
         gen2()
 
     @partial(empty_error=ValueError)
     def gen3():
-        for i in ():
-            yield i
+        yield from ()
 
     with pytest.raises(ValueError):
         gen3()
@@ -47,8 +44,7 @@ def test_report():
 
     @report(interval=2, interval_callback=logs.append, finish_callback=logs.append)
     def gen():
-        for i in range(10):
-            yield i
+        yield from range(10)
 
     generator = gen()
     assert next(generator) == 0
@@ -66,8 +62,7 @@ def test_log():
 
     @log(log=logs.append, interval=2)
     def gen():
-        for i in range(3):
-            yield i
+        yield from range(3)
 
     assert list(gen()) == [0, 1, 2]
     assert logs == [

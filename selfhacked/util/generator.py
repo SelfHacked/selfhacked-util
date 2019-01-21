@@ -31,8 +31,7 @@ def partial(
 
             def __new_generator():
                 yield first
-                for item in iterator:
-                    yield item
+                yield from iterator
 
             return __new_generator()
 
