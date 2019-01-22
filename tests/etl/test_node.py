@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.etl.context import NoRegistry, context
+from selfhacked.etl.context import Context
 from selfhacked.etl.node import AbstractNode
 from selfhacked.etl.pipe import OnePipe, Pipe
 
@@ -18,23 +18,24 @@ class DummyNode(AbstractNode):
     depends=[
         'tests/etl/test_context.py::test_no_context',
         'tests/etl/test_context.py::test_context',
+        'tests/etl/test_context.py::test_items',
     ],
 )
 def test_context():
-    with pytest.raises(NoRegistry):
+    with pytest.raises(Context.NoContext):
         DummyNode()
 
-    registry = []
-    with context(registry.append):
+    context = Context()
+    with context.context():
         n = DummyNode()
         n.pipe()
 
-    with pytest.raises(NoRegistry):
+    with pytest.raises(Context.NoContext):
         n.pipe()
-    with pytest.raises(NoRegistry):
+    with pytest.raises(Context.NoContext):
         Pipe(None, None) | n
 
-    assert registry == [n]
+    assert tuple(context.get_items(DummyNode)) == (n,)
 
 
 @pytest.mark.dependency(
@@ -43,8 +44,7 @@ def test_context():
     ],
 )
 def test_ready():
-    registry = []
-    with context(registry.append):
+    with Context.new_context():
         p = Pipe(None, None)
         n = DummyNode()
         p | n

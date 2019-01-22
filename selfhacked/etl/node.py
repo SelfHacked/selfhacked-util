@@ -1,4 +1,4 @@
-from .context import get_node_registry
+from .context import Context
 from .pipe import Pipe, AbstractPipes
 
 
@@ -7,14 +7,14 @@ class AbstractNode(object):
     OUTPUT_PIPES_CLASS = None
 
     def __init__(self):
-        self.__registry = get_node_registry()
-        self.__registry(self)
+        self.__context = Context.get_context()
+        self.__context(self)
 
         self.__input_pipes = self._create_input_pipes()
         self.__output_pipes = self._create_output_pipes()
 
     def _check_context(self):
-        get_node_registry(self.__registry)
+        Context.check_context(self.__context)
 
     def _create_input_pipes(self) -> AbstractPipes:
         return self.INPUT_PIPES_CLASS()

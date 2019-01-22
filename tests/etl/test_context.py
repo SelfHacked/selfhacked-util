@@ -1,40 +1,63 @@
 import pytest
 
-from selfhacked.etl.context import (
-    get_node_registry, context,
-    NoRegistry, MismatchRegistry,
-)
+from selfhacked.etl.context import Context
 
 
 def test_no_context():
-    with pytest.raises(NoRegistry):
-        get_node_registry()
-    with pytest.raises(NoRegistry):
-        get_node_registry(0)
+    with pytest.raises(Context.NoContext):
+        Context.get_context()
+    with pytest.raises(Context.NoContext):
+        Context.check_context(Context())
 
 
 def test_context():
-    with context(0):
-        assert 0 == get_node_registry()
+    ct = Context()
+    with ct.context():
+        assert Context.get_context() == ct
 
 
-def test_mismatch():
-    with context(0):
-        with pytest.raises(MismatchRegistry):
-            get_node_registry(1)
+def test_check():
+    ct = Context()
+    with ct.context():
+        with pytest.raises(Context.Mismatch):
+            Context.check_context(Context())
 
 
 @pytest.mark.dependency(
     depends=[
-        'test_no_context',
         'test_context',
     ],
 )
+def test_new():
+    with Context.new_context() as ct:
+        assert isinstance(ct, Context)
+        assert Context.get_context() == ct
+
+
+@pytest.mark.dependency(
+    depends=[
+        'test_new',
+        'test_no_context',
+    ],
+)
 def test_multiple():
-    with context(0):
-        assert 0 == get_node_registry()
-        with context(1):
-            assert 1 == get_node_registry()
-        assert 0 == get_node_registry()
-    with pytest.raises(NoRegistry):
-        get_node_registry()
+    with Context.new_context() as ct0:
+        assert Context.get_context() == ct0
+        with Context.new_context() as ct1:
+            assert Context.get_context() == ct1
+        assert Context.get_context() == ct0
+    with pytest.raises(Context.NoContext):
+        Context.get_context()
+
+
+@pytest.mark.dependency(
+    depends=[
+        'test_context',
+    ],
+)
+def test_items():
+    ct = Context()
+    with ct.context():
+        ct(0)
+
+    assert tuple(ct.get_items(int)) == (0,)
