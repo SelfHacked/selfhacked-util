@@ -47,7 +47,7 @@ def test_pipe_status():
     assert p.accepts_feed
     assert not p
     with pytest.raises(p.PipeNotReady):
-        tuple(p)
+        next(p)
 
     p.feed('123')
     assert p.status == p.STATUS_READY
@@ -56,14 +56,15 @@ def test_pipe_status():
     with pytest.raises(p.PipeNotAcceptingFeed):
         p.feed('456')
 
-    tuple(p)
+    assert next(p) == '1'
     assert p.status == p.STATUS_USED
     assert not p.accepts_feed
+    assert p
+
+    assert tuple(p) == ('2', '3')
+    assert p.status == p.STATUS_FINISHED
+    assert not p.accepts_feed
     assert not p
-    with pytest.raises(p.PipeNotReady):
-        tuple(p)
-    with pytest.raises(p.PipeNotAcceptingFeed):
-        p.feed('789')
 
 
 def test_pipe():

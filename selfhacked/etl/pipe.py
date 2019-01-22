@@ -1,7 +1,11 @@
-class Pipe(object):
+from typing import Iterator
+
+
+class Pipe(Iterator):
     STATUS_SETUP = 1
     STATUS_READY = 2
     STATUS_USED = 3
+    STATUS_FINISHED = 4
 
     class PipeStatusError(Exception):
         def __init__(self, status):
@@ -60,29 +64,41 @@ class Pipe(object):
     def _set_ready(self):
         self._set_status(self.STATUS_READY)
 
-    def _set_iterable(self, iterable):
-        self.__iterable = iter(iterable)
+    @property
+    def _iterable(self):
+        return self.__iterable
 
-    def feed(self, iterable):
-        if not self.accepts_feed:
-            raise self.PipeNotAcceptingFeed(self.status)
-        self._set_iterable(iterable)
-        self._set_ready()
-
-    def __bool__(self):
-        """
-        Pipe is ready
-        """
-        return self.status == self.STATUS_READY
+    @_iterable.setter
+    def _iterable(self, iterable):
+        self.__iterable = self._wrap_iterable(iterable)
 
     def _use(self):
         self._set_status(self.STATUS_USED)
 
-    def __iter__(self):
-        if not self:
-            raise self.PipeNotReady(self.status)
+    def _finish(self):
+        self._set_status(self.STATUS_FINISHED)
+
+    def _wrap_iterable(self, iterable):
         self._use()
-        return self.__iterable
+        yield from iterable
+        self._finish()
+
+    def feed(self, iterable):
+        if not self.accepts_feed:
+            raise self.PipeNotAcceptingFeed(self.status)
+        self._iterable = iterable
+        self._set_ready()
+
+    def __bool__(self):
+        """
+        Ready to call next()
+        """
+        return self.status in (self.STATUS_READY, self.STATUS_USED)
+
+    def __next__(self):
+        if self.accepts_feed:
+            raise self.PipeNotReady(self.status)
+        return next(self.__iterable)
 
 
 class AbstractPipes(object):
