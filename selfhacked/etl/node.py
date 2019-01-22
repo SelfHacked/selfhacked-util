@@ -1,8 +1,9 @@
 from .context import Context
 from .pipe import Pipe, AbstractPipes
+from .setup import SetupCheck
 
 
-class AbstractNode(object):
+class AbstractNode(SetupCheck):
     INPUT_PIPES_CLASS = None
     OUTPUT_PIPES_CLASS = None
 
@@ -31,6 +32,9 @@ class AbstractNode(object):
         pipe = Pipe(self, key)
         self.__output_pipes[key] = pipe
         return pipe
+
+    def setup_check(self):
+        pass
 
     def __bool__(self):
         """

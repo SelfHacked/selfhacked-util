@@ -1,7 +1,9 @@
 from typing import Iterator
 
+from .setup import SetupCheck
 
-class Pipe(Iterator):
+
+class Pipe(Iterator, SetupCheck):
     STATUS_SETUP = 1
     STATUS_READY = 2
     STATUS_USED = 3
@@ -21,34 +23,42 @@ class Pipe(Iterator):
     class UsedPipe(Exception):
         pass
 
-    def __init__(self, parent, key):
-        self.__parent = parent
+    def __init__(self, upstream, key):
+        self.__upstream = upstream
         self.__upstream_key = key
+        self.__downstream = None
+        self.__downstream_key = None
+
         self.__status = self.STATUS_SETUP
         self.__iterable = None
 
-        self.__receiver = None
-        self.__downstream_key = None
-
     @property
     def upstream(self):
-        return self.__parent, self.__upstream_key
+        return self.__upstream, self.__upstream_key
 
     def __or__(self, other):
-        if self.__receiver is not None:
+        if self.connected:
             raise self.UsedPipe
         if isinstance(other, tuple):
-            receiver, key = other
+            downstream, key = other
         else:
-            receiver = other
+            downstream = other
             key = None
-        self.__receiver = receiver
+        self.__downstream = downstream
         self.__downstream_key = key
-        receiver.add_input(self, key)
+        downstream.add_input(self, key)
+
+    @property
+    def connected(self):
+        return self.__downstream is not None
 
     @property
     def downstream(self):
-        return self.__receiver, self.__downstream_key
+        return self.__downstream, self.__downstream_key
+
+    def setup_check(self):
+        if not self.connected:
+            raise self.SetupError(f"No downstream for pipe {self.upstream}")
 
     @property
     def status(self):
@@ -101,7 +111,7 @@ class Pipe(Iterator):
         return next(self.__iterable)
 
 
-class AbstractPipes(object):
+class AbstractPipes(SetupCheck):
     class PipeKeyError(Exception):
         def __init__(self, key):
             self.key = key
@@ -121,6 +131,10 @@ class AbstractPipes(object):
 
     def missing(self) -> bool:
         raise NotImplementedError
+
+    def setup_check(self):
+        if self.missing():
+            raise self.SetupError(f"Missing pipes")
 
     def keys(self):
         return self.__pipes.keys()
