@@ -66,12 +66,10 @@ def test_existing():
 )
 def test_ready():
     pipes = Pipes('a', 'b')
-    assert not pipes
     pipes['a'] = Pipe(None, None)
+    pipes['b'] = Pipe(None, None)
     assert not pipes
     pipes['a'].feed('123')
-    assert not pipes
-    pipes['b'] = Pipe(None, None)
     assert not pipes
     pipes['b'].feed('456')
     assert pipes

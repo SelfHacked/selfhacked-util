@@ -75,6 +75,10 @@ class Pipe(Iterator, SetupCheck):
         self._set_status(self.STATUS_READY)
 
     @property
+    def ready(self):
+        return self.status == self.STATUS_READY
+
+    @property
     def _iterable(self):
         return self.__iterable
 
@@ -172,7 +176,7 @@ class AbstractPipes(SetupCheck):
         """
         All pipes are ready
         """
-        return (not self.missing()) and all(self.__pipes.values())
+        return all(pipe.ready for pipe in self.__pipes.values())
 
 
 class Pipes(AbstractPipes):
