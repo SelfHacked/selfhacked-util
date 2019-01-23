@@ -1,4 +1,4 @@
-from typing import Iterator
+from typing import Iterator, Set, Union
 
 from .setup import SetupCheck
 
@@ -129,12 +129,16 @@ class AbstractPipes(SetupCheck):
     def expects(self, key) -> bool:
         raise NotImplementedError
 
-    def missing(self) -> bool:
+    def missing(self) -> Union[Set[str], None]:
+        """
+        Return missing keys or None
+        """
         raise NotImplementedError
 
     def setup_check(self):
-        if self.missing():
-            raise self.SetupError(f"Missing pipes")
+        missing = self.missing()
+        if missing:
+            raise self.SetupError(f"Missing pipes: {missing}")
 
     def keys(self):
         return self.__pipes.keys()
@@ -174,13 +178,13 @@ class AbstractPipes(SetupCheck):
 class Pipes(AbstractPipes):
     def __init__(self, *expects):
         super().__init__()
-        self.__expects = tuple(expects)
+        self.__expects = set(expects)
 
     def expects(self, key):
         return key in self.__expects
 
     def missing(self):
-        return len(self) < len(self.__expects)
+        return self.__expects.difference(self.keys())
 
 
 class NoPipe(AbstractPipes):
@@ -188,7 +192,7 @@ class NoPipe(AbstractPipes):
         return False
 
     def missing(self):
-        return False
+        pass
 
 
 class OnePipe(AbstractPipes):
@@ -196,7 +200,9 @@ class OnePipe(AbstractPipes):
         return key is None
 
     def missing(self):
-        return None not in self
+        if None in self:
+            return
+        return {None}
 
     def get(self):
         return self[None]
@@ -210,4 +216,4 @@ class AnyPipe(AbstractPipes):
         return True
 
     def missing(self):
-        return False
+        pass

@@ -17,7 +17,7 @@ def test_one_pipe():
     pipes = OnePipe()
     assert pipes.expects(None)
     assert not pipes.expects('hello')
-    assert pipes.missing()
+    assert pipes.missing() == {None}
 
     pipes.set(Pipe(None, None))
     assert not pipes.missing()
@@ -30,9 +30,9 @@ def test_pipes():
     assert pipes.expects('b')
     assert not pipes.expects('hello')
 
-    assert pipes.missing()
+    assert pipes.missing() == {'a', 'b'}
     pipes['a'] = Pipe(None, None)
-    assert pipes.missing()
+    assert pipes.missing() == {'b'}
     pipes['b'] = Pipe(None, None)
     assert not pipes.missing()
 
