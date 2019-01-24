@@ -1,5 +1,14 @@
 from setuptools import setup, find_packages
 
+extra_django = [
+    'Django>=1.11',
+]
+extra_test = [
+    'pytest>=4',
+    'pytest-runner>=4',
+    'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
+]
+
 setup(
     name='selfhacked-util',
 
@@ -7,21 +16,14 @@ setup(
 
     python_requires='>=3.6',
 
-    install_requires=[
-        'Django>=1.11',
-    ],
-
     extras_require={
-        'test': [
-            'pytest>=4',
-            'pytest-runner>=4',
-            'pytest-dependency @ https://github.com/SelfHacked/pytest-dependency/archive/master.zip',
-        ],
+        'django': extra_django,
+        'test': extra_test,
     },
 
     packages=find_packages(),
     include_package_data=True,
 
-    url='https://github.com/SelfHacked/util',
+    url='https://github.com/SelfHacked/selfhacked-util',
     author='SelfHacked',
 )
