@@ -1,8 +1,9 @@
 import pytest
 
-from selfhacked.etl.context import Context
-from selfhacked.etl.node import AbstractNode
-from selfhacked.etl.pipe import OnePipe, Pipe
+from selfhacked.etl.base.context import Context
+from selfhacked.etl.base.node import AbstractNode
+from selfhacked.etl.base.pipe import Pipe
+from selfhacked.etl.base.pipes import OnePipe
 
 
 class DummyNode(AbstractNode):
@@ -16,9 +17,9 @@ class DummyNode(AbstractNode):
 @pytest.mark.dependency(
     scope='session',
     depends=[
-        'tests/etl/test_context.py::test_no_context',
-        'tests/etl/test_context.py::test_context',
-        'tests/etl/test_context.py::test_items',
+        'tests/etl/base/test_context.py::test_no_context',
+        'tests/etl/base/test_context.py::test_context',
+        'tests/etl/base/test_context.py::test_items',
     ],
 )
 def test_context():

@@ -1,9 +1,7 @@
 import pytest
 
-from selfhacked.etl.pipe import (
-    Pipe,
-    NoPipe, OnePipe, Pipes, AnyPipe,
-)
+from selfhacked.etl.base.pipe import Pipe
+from selfhacked.etl.base.pipes import NoPipe, OnePipe, Pipes, AnyPipe
 
 
 def test_no_pipe():
@@ -61,7 +59,7 @@ def test_existing():
 @pytest.mark.dependency(
     scope='session',
     depends=[
-        'tests/etl/test_pipe.py::test_pipe_status',
+        'tests/etl/base/test_pipe.py::test_pipe_status',
     ],
 )
 def test_ready():

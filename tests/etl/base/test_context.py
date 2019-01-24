@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.etl.context import Context
+from selfhacked.etl.base.context import Context
 
 
 def test_no_context():

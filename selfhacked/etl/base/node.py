@@ -1,5 +1,6 @@
 from .context import Context
-from .pipe import Pipe, AbstractPipes
+from .pipe import Pipe
+from .pipes import AbstractPipes
 from .setup import SetupCheck
 
 

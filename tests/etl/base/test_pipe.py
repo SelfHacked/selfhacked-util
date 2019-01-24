@@ -1,7 +1,7 @@
 import pytest
 from typing import Dict, Any
 
-from selfhacked.etl.pipe import Pipe
+from selfhacked.etl.base.pipe import Pipe
 
 
 class DummyNode(object):
