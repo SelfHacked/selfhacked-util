@@ -5,7 +5,6 @@ def test():
     assert True
 
 
-@pytest.mark.dependency()
 def test_dependency():
     assert True
 
