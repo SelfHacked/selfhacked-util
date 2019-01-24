@@ -20,6 +20,6 @@ setup(
 
     packages=['selfhacked'],
 
-    url='https://github.com/SelfHacked/util',
+    url='https://github.com/SelfHacked/selfhacked-util',
     author='SelfHacked',
 )

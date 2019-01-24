@@ -24,9 +24,9 @@
 
     In `requirements.txt`
 
-        git+git://github.com/SelfHacked/util.git
+        git+git://github.com/SelfHacked/selfhacked-util.git
 
     The branch is `master` by default.
     To specify a branch,
 
-        git+git://github.com/SelfHacked/util.git@{branch}
+        git+git://github.com/SelfHacked/selfhacked-util.git@{branch}
