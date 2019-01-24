@@ -7,9 +7,11 @@ setup(
 
     python_requires='>=3.6',
 
-    install_requires=[
-        'Django>=1.11',
-    ],
+    extras_require={
+        'django': [
+            'Django>=1.11',
+        ],
+    },
 
     setup_requires=[
         'pytest-runner',
