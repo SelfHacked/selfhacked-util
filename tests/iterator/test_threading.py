@@ -2,8 +2,8 @@ from time import sleep
 
 import pytest
 
+from selfhacked.iterator.threading import ThreadedPrefetchOneIterator, ThreadedPrefetchAllIterator
 from selfhacked.testing import assert_time
-from selfhacked.threading.iterable import ThreadedPrefetchOneIterator, ThreadedPrefetchAllIterator
 
 
 def dummy_iterable():

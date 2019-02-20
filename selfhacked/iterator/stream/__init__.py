@@ -1,7 +1,7 @@
 from typing import Iterator, Iterable
 
 
-class Stream(object):
+class Stream(Iterable):
     def _open(self):
         pass
 
@@ -23,8 +23,8 @@ class Stream(object):
 
 
 class IterStream(Stream):
-    def __init__(self, iter: Iterable):
-        self.__iter = iter
+    def __init__(self, iterable: Iterable):
+        self.__iter = iterable
 
     def _iter(self):
         yield from self.__iter

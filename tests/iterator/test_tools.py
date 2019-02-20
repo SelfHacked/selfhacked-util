@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.iterator import PeekIterator, ReadableIterator
+from selfhacked.iterator.tools import PeekIterator, ReadableIterator
 
 
 def test_peek():

@@ -1,7 +1,7 @@
 import gzip
 from typing import Iterable
 
-from selfhacked.iterator import ReadableIterator
+from .tools import ReadableIterator
 
 
 def apply(func, *args, **kwargs):

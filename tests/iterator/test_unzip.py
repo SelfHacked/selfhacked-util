@@ -1,16 +1,16 @@
 import gzip
 import pytest
 
-from selfhacked.stream.io import FileStream
-from selfhacked.stream.operands import un_gzip
+from selfhacked.iterator.functional import un_gzip
+from selfhacked.iterator.stream.io import FileStream
 
 
 @pytest.mark.dependency(
     scope='session',
     depends=[
-        'tests/stream/test_streams.py::test_file_stream',
-        'tests/stream/test_operands.py::test_or',
-        'tests/test_iterator.py::test_readable_read',
+        'tests/iterator/test_streams.py::test_file_stream',
+        'tests/iterator/test_streams.py::test_or',
+        'tests/iterator/test_tools.py::test_readable_read',
     ],
 )
 def test_un_gzip(tmpdir):
