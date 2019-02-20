@@ -5,30 +5,37 @@ class PeekIterator(Iterator):
     def __init__(self, iterator: Iterator):
         self.__iter = iter(iterator)
 
-        self.__empty = False
-        self.__next = None
-        self.__forward()
+        self._empty = False
+        self._next = None
+        self._forward()
 
-    def __forward(self):
+    def _forward(self):
         try:
-            self.__next = next(self.__iter)
+            self._next = next(self.__iter)
         except StopIteration:
-            self.__empty = True
+            self._empty = True
 
     def peek(self):
-        if self.__empty:
+        if self._empty:
             raise StopIteration
-        return self.__next
+        return self._next
 
     def __next__(self):
         result = self.peek()
-        self.__forward()
+        self._forward()
         return result
 
 
 class ReadableIterator(PeekIterator):
     def __init__(self, iterator: Iterator):
         super().__init__(iterator)
+
+    @property
+    def empty(self):
+        try:
+            return self.peek()[0:0]
+        except StopIteration:
+            raise EOFError from None
 
     def readable(self):
         try:
@@ -44,7 +51,19 @@ class ReadableIterator(PeekIterator):
         except StopIteration:
             raise EOFError from None
 
-    read = readline
+    def read(self, size: int = None):
+        result = self.empty
+        while True:
+            try:
+                result += self.peek()
+            except StopIteration:
+                return result
+            if size is not None and len(result) > size:
+                self._next = result[size:]
+                result = result[:size]
+                return result
+            else:
+                self._forward()
 
     def readlines(self):
         return list(self)
