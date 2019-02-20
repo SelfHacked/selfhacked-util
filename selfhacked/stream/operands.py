@@ -1,4 +1,7 @@
+import gzip
 from typing import Iterable
+
+from selfhacked.iterator import ReadableIterator
 
 
 def apply(func, *args, **kwargs):
@@ -37,3 +40,8 @@ def split_lines(iterable: Iterable[str]):
         yield from lines
     if remaining:
         yield remaining
+
+
+def un_gzip(iterable: Iterable[bytes]):
+    readable = ReadableIterator(iter(iterable), b'')
+    yield from gzip.open(readable)

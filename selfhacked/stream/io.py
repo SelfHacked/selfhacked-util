@@ -11,12 +11,17 @@ class InputStream(Stream):
 
 
 class FileStream(Stream):
-    def __init__(self, name):
+    def __init__(self, name, binary=False):
         self.__name = name
+        self.__binary = binary
         self.__f = None
 
+    @property
+    def __mode(self):
+        return 'rb' if self.__binary else 'r'
+
     def _open(self):
-        self.__f = open(self.__name)
+        self.__f = open(self.__name, self.__mode)
 
     def _close(self):
         self.__f.close()

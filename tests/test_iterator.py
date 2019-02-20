@@ -27,26 +27,20 @@ def test_peek():
     depends=['test_peek'],
 )
 def test_readable():
-    ri = ReadableIterator('abc')
+    ri = ReadableIterator('abc', empty='')
 
-    assert ri.readable()
     assert ri.readline() == 'a'
     assert ri.readlines() == ['b', 'c']
-    with pytest.raises(EOFError):
-        assert ri.readline()
-    assert not ri.readable()
+    assert ri.readline() == ''
 
 
 @pytest.mark.depenedency(
     depends=['test_readable'],
 )
 def test_readable_read():
-    ri = ReadableIterator(['abc', 'd', 'ef'])
+    ri = ReadableIterator(['abc', 'd', 'ef'], empty='')
 
-    assert ri.readable()
     assert ri.read(1) == 'a'
     assert ri.readline() == 'bc'
     assert ri.read() == 'def'
-    with pytest.raises(EOFError):
-        assert ri.read()
-    assert not ri.readable()
+    assert ri.read() == ''

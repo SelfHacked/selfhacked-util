@@ -27,32 +27,21 @@ class PeekIterator(Iterator):
 
 
 class ReadableIterator(PeekIterator):
-    def __init__(self, iterator: Iterator):
+    def __init__(self, iterator: Iterator, empty):
         super().__init__(iterator)
-
-    @property
-    def empty(self):
-        try:
-            return self.peek()[0:0]
-        except StopIteration:
-            raise EOFError from None
-
-    def readable(self):
-        try:
-            self.peek()
-        except StopIteration:
-            return False
-        else:
-            return True
+        self.empty = empty
 
     def readline(self):
         try:
             return next(self)
         except StopIteration:
-            raise EOFError from None
+            return self.empty
 
     def read(self, size: int = None):
-        result = self.empty
+        try:
+            result = self.empty
+        except StopIteration:
+            return self.empty
         while True:
             try:
                 result += self.peek()
