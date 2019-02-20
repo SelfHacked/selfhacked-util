@@ -1,10 +1,10 @@
 import pytest
 
-from selfhacked.iterator import PeekableIterator, ReadableIterator
+from selfhacked.iterator import PeekIterator, ReadableIterator
 
 
-def test_peekable():
-    pi = PeekableIterator('ab')
+def test_peek():
+    pi = PeekIterator('ab')
 
     assert pi.peek() == 'a'
     assert next(pi) == 'a'
@@ -24,7 +24,7 @@ def test_peekable():
 
 
 @pytest.mark.dependency(
-    depends=['test_peekable'],
+    depends=['test_peek'],
 )
 def test_readable():
     ri = ReadableIterator('abc')

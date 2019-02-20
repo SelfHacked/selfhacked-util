@@ -1,26 +1,32 @@
 from typing import Iterator
 
 
-class PeekableIterator(Iterator):
+class PeekIterator(Iterator):
     def __init__(self, iterator: Iterator):
         self.__iter = iter(iterator)
 
+        self.__empty = False
         self.__next = None
-        self.__peeked = False
+        self.__forward()
+
+    def __forward(self):
+        try:
+            self.__next = next(self.__iter)
+        except StopIteration:
+            self.__empty = True
 
     def peek(self):
-        self.__next = next(self)
-        self.__peeked = True
+        if self.__empty:
+            raise StopIteration
         return self.__next
 
     def __next__(self):
-        if self.__peeked:
-            self.__peeked = False
-            return self.__next
-        return next(self.__iter)
+        result = self.peek()
+        self.__forward()
+        return result
 
 
-class ReadableIterator(PeekableIterator):
+class ReadableIterator(PeekIterator):
     def __init__(self, iterator: Iterator):
         super().__init__(iterator)
 
