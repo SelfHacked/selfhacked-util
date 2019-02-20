@@ -1,7 +1,7 @@
 import gzip
 import pytest
 
-from selfhacked.iterator.functional import un_gzip
+from selfhacked.iterator.functional.bytes import un_gzip
 from selfhacked.iterator.stream.io import FileStream
 
 

@@ -1,6 +1,7 @@
 import pytest
 
-from selfhacked.iterator.functional import strip, remove_empty, remove_comments
+from selfhacked.iterator.functional import remove_empty
+from selfhacked.iterator.functional.strings import strip, remove_comments
 from selfhacked.iterator.stream import IterStream, Stream
 from selfhacked.iterator.stream.io import InputStream, FileStream
 

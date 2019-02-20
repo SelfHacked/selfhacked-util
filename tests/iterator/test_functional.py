@@ -1,7 +1,6 @@
-from selfhacked.iterator.functional import (
-    strip, remove_empty, remove_comments,
-    decode, split_lines,
-)
+from selfhacked.iterator.functional import remove_empty
+from selfhacked.iterator.functional.bytes import decode
+from selfhacked.iterator.functional.strings import strip, remove_comments, split_lines
 
 
 def test_strip(tmpdir):
