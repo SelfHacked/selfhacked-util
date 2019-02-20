@@ -18,3 +18,27 @@ class PeekableIterator(Iterator):
             self.__peeked = False
             return self.__next
         return next(self.__iter)
+
+
+class ReadableIterator(PeekableIterator):
+    def __init__(self, iterator: Iterator):
+        super().__init__(iterator)
+
+    def readable(self):
+        try:
+            self.peek()
+        except StopIteration:
+            return False
+        else:
+            return True
+
+    def readline(self):
+        try:
+            return next(self)
+        except StopIteration:
+            raise EOFError from None
+
+    read = readline
+
+    def readlines(self):
+        return list(self)
