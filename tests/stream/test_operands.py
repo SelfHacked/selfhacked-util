@@ -2,7 +2,10 @@ import pytest
 
 from selfhacked.stream import IterStream, Stream
 from selfhacked.stream.io import FileStream
-from selfhacked.stream.operands import strip, remove_empty, remove_comments
+from selfhacked.stream.operands import (
+    strip, remove_empty, remove_comments,
+    decode, split_lines,
+)
 
 
 def test_or():
@@ -42,7 +45,7 @@ def test_remove_emtpy():
         ('session', 'tests/stream/test_streams.py::test_iter_stream'),
     ],
 )
-def test_remove_comments(tmpdir):
+def test_remove_comments():
     assert tuple(IterStream(('#123', 'abc')) | remove_comments) == ('abc',)
 
 
@@ -68,3 +71,32 @@ abc
         | remove_empty
         | remove_comments
     ) == ('abc',)
+
+
+@pytest.mark.dependency(
+    depends=[
+        'test_or',
+        ('session', 'tests/stream/test_streams.py::test_iter_stream'),
+    ],
+)
+def test_decode():
+    assert tuple(IterStream((b'abc', b'123')) | decode) == ('abc', '123')
+
+
+@pytest.mark.dependency(
+    depends=[
+        'test_or',
+        ('session', 'tests/stream/test_streams.py::test_iter_stream'),
+    ],
+)
+def test_split_lines():
+    assert tuple(IterStream((
+        'abc\n\n123',
+        '456\n',
+        '789\n'
+    )) | split_lines) == (
+               'abc\n',
+               '\n',
+               '123456\n',
+               '789\n'
+           )

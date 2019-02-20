@@ -24,3 +24,16 @@ def remove_comments(iterable: Iterable[str]):
         if item.startswith('#'):
             continue
         yield item
+
+
+decode = apply(bytes.decode, encoding='utf-8')
+
+
+def split_lines(iterable: Iterable[str]):
+    remaining = ''
+    for item in iterable:
+        lines = (remaining + item).splitlines(keepends=True)
+        remaining = lines.pop(-1)
+        yield from lines
+    if remaining:
+        yield remaining
