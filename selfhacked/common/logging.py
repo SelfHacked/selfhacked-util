@@ -18,6 +18,7 @@ FORMATTERS = {
 def add_rotating_handler(
         LOGGING: dict, BASE_DIR: str,
         namespace: str,
+        *,
         name: str = None,
         path: str = None,
         formatter: str = None,

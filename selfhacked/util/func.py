@@ -34,6 +34,7 @@ def timed(
 
 
 def log_time(
+        *,
         log: Callable[[str], None] = print,
         name=None,
 ):

@@ -41,7 +41,13 @@ class ThreadedPrefetchAllIterator(Iterator):
     class Timeout(Exception):
         pass
 
-    def __init__(self, iterable, sleep=None, timeout=None):
+    def __init__(
+            self,
+            iterable,
+            *,
+            sleep=None,
+            timeout=None,
+    ):
         self.__iter = iter(iterable)
         self.__sleep = sleep
         self.__timeout = timeout

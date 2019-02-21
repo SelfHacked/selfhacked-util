@@ -5,6 +5,7 @@ from .functional.counting import report as _report, log as _log
 
 
 def partial(
+        *,
         empty_error: Union[bool, Type[Exception]] = False
 ):
     """
@@ -69,6 +70,7 @@ report = functional(_report, has_params=True)
 
 
 def log(
+        *,
         log: Callable[[str], None] = print,
         name=None,
         interval=1000,

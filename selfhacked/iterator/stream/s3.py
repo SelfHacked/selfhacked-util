@@ -7,7 +7,7 @@ from . import Stream
 class S3Stream(Stream):
     s3 = boto3.resource('s3')
 
-    def __init__(self, bucket, key, lines=False):
+    def __init__(self, bucket, key, *, lines=False):
         self.__bucket = bucket
         self.__key = key
         self.__lines = lines

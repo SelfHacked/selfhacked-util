@@ -11,7 +11,7 @@ class InputStream(Stream):
 
 
 class FileStream(Stream):
-    def __init__(self, name, binary=False):
+    def __init__(self, name, *, binary=False):
         self.__name = name
         self.__binary = binary
         self.__f = None

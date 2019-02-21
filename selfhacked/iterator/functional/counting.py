@@ -2,6 +2,7 @@ from typing import Callable
 
 
 def report(
+        *,
         interval=1000,
         interval_callback: Callable[[int], None] = None,
         finish_callback: Callable[[int], None] = None,
@@ -27,6 +28,7 @@ def report(
 
 def log(
         name,
+        *,
         log: Callable[[str], None] = print,
         interval=1000,
 ):

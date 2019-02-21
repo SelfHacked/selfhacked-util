@@ -28,7 +28,7 @@ def test_timed():
 def test_log_time():
     logs = []
 
-    @log_time(logs.append)
+    @log_time(log=logs.append)
     def long():
         for i in range(10):
             pass
