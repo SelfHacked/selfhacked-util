@@ -1,14 +1,14 @@
-from typing import Iterator, Iterable
+from typing import Iterator, Iterable, T_co
 
 
-class Stream(Iterable):
+class Stream(Iterable[T_co]):
     def _open(self):
         pass
 
     def _close(self):
         pass
 
-    def _iter(self) -> Iterator:
+    def _iter(self) -> Iterator[T_co]:
         raise NotImplementedError
 
     def __iter__(self):
@@ -22,7 +22,7 @@ class Stream(Iterable):
         return IterStream(other(self))
 
 
-class IterStream(Stream):
+class IterStream(Stream[T_co]):
     def __init__(self, iterable: Iterable):
         self.__iter = iterable
 

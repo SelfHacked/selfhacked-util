@@ -1,7 +1,9 @@
+from typing import Union
+
 from . import Stream
 
 
-class InputStream(Stream):
+class InputStream(Stream[str]):
     def _iter(self):
         try:
             while True:
@@ -10,7 +12,7 @@ class InputStream(Stream):
             return
 
 
-class FileStream(Stream):
+class FileStream(Stream[Union[str, bytes]]):
     def __init__(self, name, *, binary=False):
         self.__name = name
         self.__binary = binary

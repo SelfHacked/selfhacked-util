@@ -1,10 +1,10 @@
 import time
 
 from threading import Thread
-from typing import Iterator
+from typing import Iterator, T_co
 
 
-class ThreadedPrefetchOneIterator(Iterator):
+class ThreadedPrefetchOneIterator(Iterator[T_co]):
     """
     Prefetch one record via multithreading.
     """
@@ -37,7 +37,7 @@ class ThreadedPrefetchOneIterator(Iterator):
             self.__prefetch()
 
 
-class ThreadedPrefetchAllIterator(Iterator):
+class ThreadedPrefetchAllIterator(Iterator[T_co]):
     class Timeout(Exception):
         pass
 

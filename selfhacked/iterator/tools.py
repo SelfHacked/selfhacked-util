@@ -1,7 +1,7 @@
-from typing import Iterator
+from typing import Iterator, T_co
 
 
-class PeekIterator(Iterator):
+class PeekIterator(Iterator[T_co]):
     def __init__(self, iterator: Iterator):
         self.__iter = iter(iterator)
 
@@ -26,7 +26,7 @@ class PeekIterator(Iterator):
         return result
 
 
-class ReadableIterator(PeekIterator):
+class ReadableIterator(PeekIterator[T_co]):
     def __init__(self, iterator: Iterator, empty):
         super().__init__(iterator)
         self.empty = empty

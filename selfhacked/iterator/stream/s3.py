@@ -4,7 +4,7 @@ from botocore.response import StreamingBody
 from . import Stream
 
 
-class S3Stream(Stream):
+class S3Stream(Stream[bytes]):
     s3 = boto3.resource('s3')
 
     def __init__(self, bucket, key, *, lines=False):
