@@ -1,6 +1,8 @@
 from functools import wraps
 from typing import Union, Type, Callable
 
+from .functional.counting import report as _report, log as _log
+
 
 def partial(
         empty_error: Union[bool, Type[Exception]] = False
@@ -40,32 +42,30 @@ def partial(
     return __decor
 
 
-def report(
-        interval=1000,
-        interval_callback: Callable[[int], None] = None,
-        finish_callback: Callable[[int], None] = None,
-):
-    """
-    Report progress of a generator
-    """
+def functional(func, has_params):
+    @wraps(func)
+    def __new_func(*args, **kwargs):
+        if has_params:
+            f = func(*args, **kwargs)
+        else:
+            f = func
 
-    def __decor(gen):
-        @wraps(gen)
-        def __new_func(*args, **kwargs):
-            count = 0
-            for item in gen(*args, **kwargs):
-                count += 1
-                if count % interval == 0:
-                    if interval_callback is not None:
-                        interval_callback(count)
-                yield item
+        def __decor(gen):
+            @wraps(gen)
+            def __new_gen(*args, **kwargs):
+                return f(gen(*args, **kwargs))
 
-            if finish_callback is not None:
-                finish_callback(count)
+            return __new_gen
 
+        return __decor
+
+    if has_params:
         return __new_func
+    else:
+        return __new_func()
 
-    return __decor
+
+report = functional(_report, has_params=True)
 
 
 def log(
@@ -79,17 +79,10 @@ def log(
 
     def __decor(gen):
         _name = name or gen.__name__
-
-        def interval_callback(n):
-            log(f"{_name}: yielded {n} entries")
-
-        def finish_callback(n):
-            log(f"{_name}: finished with {n} entries")
-
-        return report(
+        return functional(_log, has_params=True)(
+            _name,
+            log=log,
             interval=interval,
-            interval_callback=interval_callback,
-            finish_callback=finish_callback,
         )(gen)
 
     return __decor
