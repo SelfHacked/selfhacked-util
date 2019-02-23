@@ -14,3 +14,8 @@ def remove_empty(iterable: Iterable):
         if not item:
             continue
         yield item
+
+
+def yield_from(iterable: Iterable[Iterable]):
+    for item in iterable:
+        yield from item
