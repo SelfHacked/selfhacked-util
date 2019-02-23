@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Iterable
 
 
 def report(
@@ -11,7 +11,7 @@ def report(
     Report progress of a iterable
     """
 
-    def __func(iterable):
+    def __func(iterable: Iterable):
         count = 0
         for item in iterable:
             count += 1
@@ -36,7 +36,7 @@ def log(
     Log progress of a iterable
     """
 
-    def __func(iterable):
+    def __func(iterable: Iterable):
         def interval_callback(n):
             log(f"{name}: yielded {n} entries")
 
