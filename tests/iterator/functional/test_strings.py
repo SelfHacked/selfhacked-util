@@ -1,5 +1,3 @@
-from selfhacked.iterator.functional import remove_empty
-from selfhacked.iterator.functional.bytes import decode
 from selfhacked.iterator.functional.strings import strip, remove_comments, split_lines
 
 
@@ -13,16 +11,8 @@ abc
         assert tuple(strip(f)) == ('123', 'abc')
 
 
-def test_remove_empty():
-    assert tuple(remove_empty(('123', '', 'abc'))) == ('123', 'abc')
-
-
 def test_remove_comments():
     assert tuple(remove_comments(('#123', 'abc'))) == ('abc',)
-
-
-def test_decode():
-    assert tuple(decode((b'abc', b'123'))) == ('abc', '123')
 
 
 def test_split_lines():
