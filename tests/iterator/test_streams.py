@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.iterator.functional import remove_empty
+from selfhacked.iterator.functional import remove_empty, apply
 from selfhacked.iterator.functional.strings import strip, remove_comments
 from selfhacked.iterator.stream import IterStream, Stream
 from selfhacked.iterator.stream.io import InputStream, FileStream
@@ -38,6 +38,25 @@ def test_or():
     s1 = IterStream('123')
     s2 = s1 | strip
     assert isinstance(s2, Stream)
+
+
+def test_gt():
+    s1 = IterStream('123')
+    tu = s1 > tuple
+    assert tu == ('1', '2', '3')
+
+
+@pytest.mark.dependency(
+    depends=[
+        'test_or',
+    ],
+)
+def test_call():
+    s = IterStream('abc')
+    li = []
+    s2 = s | apply(li.append)
+    s2()
+    assert li == ['a', 'b', 'c']
 
 
 @pytest.mark.dependency(

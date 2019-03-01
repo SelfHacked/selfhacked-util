@@ -25,6 +25,20 @@ class Stream(Iterable[T_co]):
         """
         return IterStream(other(self))
 
+    def __gt__(self, other):
+        """
+        Override the `>` operator.
+        Call `other(self)`.
+        """
+        return other(self)
+
+    def __call__(self) -> None:
+        """
+        Go through the stream with a for loop without returning anything.
+        """
+        for item in self:
+            pass
+
 
 class IterStream(Stream[T_co]):
     def __init__(self, iterable: Iterable):
