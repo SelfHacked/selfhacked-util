@@ -18,7 +18,11 @@ class Stream(Iterable[T_co]):
         finally:
             self._close()
 
-    def __or__(self, other):
+    def __or__(self, other) -> 'Stream':
+        """
+        Override the `|` operator.
+        :param other: An iterator function, see `functional` package.
+        """
         return IterStream(other(self))
 
 
