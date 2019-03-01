@@ -57,6 +57,9 @@ class S3File(object):
     def as_stream(self, *, lines=False) -> Stream[bytes]:
         return IterStream(self.as_iter(lines=lines))
 
+    def upload_from(self, filename: str):
+        self.get_obj().upload_file(filename)
+
     def upload(self, file: BinaryIO):
         self.get_obj().upload_fileobj(file)
 
@@ -87,3 +90,59 @@ class S3File(object):
                     f.write(chunk)
                 f.seek(0, 0)
                 other.upload(f)
+
+
+def upload_cmd():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file')
+    parser.add_argument('bucket')
+    parser.add_argument('key')
+    args = parser.parse_args()
+    S3File(args.bucket, args.key).upload_from(args.file)
+
+
+def download_cmd():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('bucket')
+    parser.add_argument('key')
+    parser.add_argument('file')
+    args = parser.parse_args()
+    with open(args.file, 'wb') as f:
+        for chunk in S3File(args.bucket, args.key).as_iter(lines=False):
+            f.write(chunk)
+
+
+def get_cmd():
+    """
+    Stream to stdout
+    """
+    import sys
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('bucket')
+    parser.add_argument('key')
+    args = parser.parse_args()
+    for chunk in S3File(args.bucket, args.key).as_iter(lines=False):
+        sys.stdout.buffer.write(chunk)
+
+
+def copy_cmd():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('from-bucket')
+    parser.add_argument('from-key')
+    parser.add_argument('to-bucket')
+    parser.add_argument('to-key')
+    parser.add_argument('--in-memory', action='store_true')
+    args = parser.parse_args()
+
+    S3File(
+        args.from_bucket,
+        args.from_key,
+    ).copy_to(
+        bucket=args.to_bucket,
+        key=args.to_key,
+        in_memory=args.in_memory,
+    )

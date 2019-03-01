@@ -38,4 +38,13 @@ setup(
 
     url='https://github.com/SelfHacked/selfhacked-util',
     author='SelfHacked',
+
+    entry_points={
+        'console_scripts': [
+            's3-upload=selfhacked.aws.s3:upload_cmd',
+            's3-download=selfhacked.aws.s3:download_cmd',
+            's3-get=selfhacked.aws.s3:get_cmd',
+            's3-copy=selfhacked.aws.s3:copy_cmd',
+        ],
+    },
 )
