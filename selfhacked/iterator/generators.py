@@ -43,7 +43,7 @@ def partial(
     return __decor
 
 
-def functional(func, has_params):
+def functional(func, *, has_params):
     @wraps(func)
     def __new_func(*args, **kwargs):
         if has_params:
@@ -82,8 +82,8 @@ def log(
     def __decor(gen):
         _name = name or gen.__name__
         return functional(_log, has_params=True)(
-            _name,
             log=log,
+            name=_name,
             interval=interval,
         )(gen)
 

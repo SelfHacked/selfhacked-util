@@ -1,52 +1,74 @@
-from typing import Callable, Iterable, Iterator
+from typing import Callable, Iterable, Iterator, T_co
+
+from . import Function
 
 
-def report(
-        *,
-        interval=1000,
-        interval_callback: Callable[[int], None] = None,
-        finish_callback: Callable[[int], None] = None,
-):
-    """
-    Report progress of a iterable
-    """
+class _BaseReport(Function[T_co, T_co]):
+    def __init__(self, *, interval=1000):
+        self.__interval = interval
 
-    def __func(iterable: Iterable) -> Iterator:
+    def _interval_callback(self, n: int):
+        raise NotImplementedError
+
+    def _finish_callback(self, n: int):
+        raise NotImplementedError
+
+    def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
         count = 0
         for item in iterable:
             count += 1
-            if count % interval == 0:
-                if interval_callback is not None:
-                    interval_callback(count)
+            if count % self.__interval == 0:
+                self._interval_callback(count)
             yield item
 
-        if finish_callback is not None:
-            finish_callback(count)
-
-    return __func
+        self._finish_callback(count)
 
 
-def log(
-        name,
-        *,
-        log: Callable[[str], None] = print,
-        interval=1000,
-):
+class report(_BaseReport[T_co]):
     """
-    Log progress of a iterable
+    Report progress of an iterable
     """
 
-    def __func(iterable: Iterable) -> Iterator:
-        def interval_callback(n):
-            log(f"{name}: yielded {n} entries")
+    @staticmethod
+    def none(n: int):
+        pass
 
-        def finish_callback(n):
-            log(f"{name}: finished with {n} entries")
+    def __init__(
+            self,
+            *,
+            interval=1000,
+            interval_callback: Callable[[int], None] = None,
+            finish_callback: Callable[[int], None] = None,
+    ):
+        super().__init__(interval=interval)
+        self.__interval_callback = interval_callback or self.none
+        self.__finish_callback = finish_callback or self.none
 
-        return report(
-            interval=interval,
-            interval_callback=interval_callback,
-            finish_callback=finish_callback,
-        )(iterable)
+    def _interval_callback(self, n: int):
+        self.__interval_callback(n)
 
-    return __func
+    def _finish_callback(self, n: int):
+        self.__finish_callback(n)
+
+
+class log(_BaseReport[T_co]):
+    """
+    Log progress of an iterable
+    """
+
+    def __init__(
+            self,
+            *,
+            log: Callable[[str], None] = print,
+            name,
+            interval=1000,
+    ):
+        super().__init__(interval=interval)
+        self.__name = name
+        self.__log = log
+
+    def _interval_callback(self, n: int):
+        self.__log(f"{self.__name}: yielded {n} entries")
+
+    def _finish_callback(self, n: int):
+        self.__log(f"{self.__name}: finished with {n} entries")

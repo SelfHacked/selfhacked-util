@@ -1,10 +1,10 @@
 from typing import Iterable, Iterator
 
-from . import apply, filter_not
+from . import apply, filter, Function
 
-strip = apply(str.strip)
+strip: Function[str, str] = apply(str.strip)
 
-remove_comments = filter_not(str.startswith, '#')
+remove_comments: filter[str] = ~filter(str.startswith, '#')
 
 
 def split_lines(iterable: Iterable[str]) -> Iterator[str]:
