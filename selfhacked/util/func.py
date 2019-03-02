@@ -1,24 +1,26 @@
 import time
 
 from functools import wraps
-from typing import Callable
+from typing import Callable, Type
 
 
-def returns(type):
-    def __decor(func):
+class returns(object):
+    def __init__(self, type: Type):
+        self.__type = type
+
+    def __call__(self, func):
         @wraps(func)
         def __new_func(*args, **kwargs):
-            return type(func(*args, **kwargs))
+            return self.__type(func(*args, **kwargs))
 
         return __new_func
 
-    return __decor
 
+class _BaseTimed(object):
+    def _callback(self, func, dt: float):
+        raise NotImplementedError
 
-def timed(
-        callback: Callable[[float], None]
-):
-    def __decor(func):
+    def __call__(self, func):
         @wraps(func)
         def __new_func(*args, **kwargs):
 
@@ -26,24 +28,29 @@ def timed(
             try:
                 return func(*args, **kwargs)
             finally:
-                callback(time.time() - start)
+                self._callback(func, time.time() - start)
 
         return __new_func
 
-    return __decor
+
+class timed(_BaseTimed):
+    def __init__(self, callback: Callable[[float], None]):
+        self.__callback = callback
+
+    def _callback(self, func, dt: float):
+        self.__callback(dt)
 
 
-def log_time(
-        *,
-        log: Callable[[str], None] = print,
-        name=None,
-):
-    def __decor(func):
-        _name = name or func.__name__
+class log_time(_BaseTimed):
+    def __init__(
+            self,
+            *,
+            log: Callable[[str], None] = print,
+            name=None,
+    ):
+        self.__log = log
+        self.__name = name
 
-        def callback(t):
-            log(f"{_name} call took {t} seconds")
-
-        return timed(callback=callback)(func)
-
-    return __decor
+    def _callback(self, func, dt: float):
+        name = self.__name or func.__name__
+        self.__log(f"{name} call took {dt} seconds")
