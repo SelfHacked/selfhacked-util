@@ -6,6 +6,7 @@ def apply(func, *args, **kwargs):
     Apply `func` to all items in the iterable.
     `func` must take each item as the first argument, and then take *args, **kwargs
     """
+
     def __func(iterable: Iterable) -> Iterator:
         for item in iterable:
             yield func(item, *args, **kwargs)
@@ -13,14 +14,35 @@ def apply(func, *args, **kwargs):
     return __func
 
 
-def remove_empty(iterable: Iterable) -> Iterator:
+def filter(match, *args, **kwargs):
     """
-    Remove items that are evaluated as False.
+    Check all items in the iterable, and yield only matches.
     """
-    for item in iterable:
-        if not item:
-            continue
-        yield item
+
+    def __func(iterable: Iterable) -> Iterator:
+        for item in iterable:
+            if not match(item, *args, **kwargs):
+                continue
+            yield item
+
+    return __func
+
+
+def filter_not(match, *args, **kwargs):
+    """
+    Check all items in the iterable, and yield only non-matches.
+    """
+
+    def __func(iterable: Iterable) -> Iterator:
+        for item in iterable:
+            if match(item, *args, **kwargs):
+                continue
+            yield item
+
+    return __func
+
+
+remove_empty = filter(bool)
 
 
 def yield_from(iterable: Iterable[Iterable]) -> Iterator:

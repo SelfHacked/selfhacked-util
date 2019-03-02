@@ -1,18 +1,10 @@
 from typing import Iterable, Iterator
 
-from . import apply
+from . import apply, filter_not
 
 strip = apply(str.strip)
 
-
-def remove_comments(iterable: Iterable[str]) -> Iterator[str]:
-    """
-    Remove lines that start with '#'
-    """
-    for item in iterable:
-        if item.startswith('#'):
-            continue
-        yield item
+remove_comments = filter_not(str.startswith, '#')
 
 
 def split_lines(iterable: Iterable[str]) -> Iterator[str]:
