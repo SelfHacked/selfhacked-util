@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.iterator.generators import partial, report, log
+from selfhacked.iterator.generators import partial, report, log, remove_empty
 
 
 def test_partial():
@@ -22,7 +22,7 @@ def test_empty():
     def gen():
         yield from ()
 
-    assert gen() == ()
+    assert tuple(gen()) == ()
 
     @partial(empty_error=True)
     def gen2():
@@ -37,6 +37,16 @@ def test_empty():
 
     with pytest.raises(ValueError):
         gen3()
+
+
+def test_remove_empty():
+    @remove_empty
+    def gen():
+        yield 1
+        yield 0
+        yield 2
+
+    assert tuple(gen()) == (1, 2)
 
 
 def test_report():
