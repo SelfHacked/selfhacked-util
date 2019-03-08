@@ -3,7 +3,7 @@ import time
 import logging
 import string
 from logging import Logger
-from typing import List, Collection, Sequence, Dict, Type, Any, Tuple, Iterable, Union
+from typing import List, Collection, Sequence, Dict, Type, Any, Tuple, Iterable, Union, Optional
 
 from selfhacked.util.func import returns
 from .schema import CsvSchema
@@ -119,7 +119,9 @@ class Field(object):
         return self.__class__.__name__
 
     @property
-    def _logger(self) -> Logger:
+    def _logger(self) -> Optional[Logger]:
+        if self.schema is None:
+            return None
         return self.schema.logger
 
     def _log(
@@ -132,15 +134,18 @@ class Field(object):
             str(m)
             for m in msg
         )
-        context = self.schema.context
-        err = '\t'.join((
-            str(context['lineno']),
-            '[uniq]' if unique else '[all]',
-            context['field'],
-            context['value'],
-            self.name,
-            *msg,
-        ))
+        if self.schema is None:
+            err = '\t'.join(msg)
+        else:
+            context = self.schema.context
+            err = '\t'.join((
+                str(context['lineno']),
+                '[uniq]' if unique else '[all]',
+                context['field'],
+                context['value'],
+                self.name,
+                *msg,
+            ))
         if level >= RAISE:
             raise self.ParseError(err)
         if self._logger is None:
