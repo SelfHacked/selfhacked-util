@@ -232,7 +232,10 @@ class Field(object):
             return None
         s = self._replace(s)
         self._validate_pre(s)
-        val = self._parse(s)
+        try:
+            val = self._parse(s)
+        except Exception as e:
+            raise self.ParseError(e) from None
         self._validate_post(val)
         return val
 
@@ -517,7 +520,7 @@ class CleanTextField(TextField):
             A substring set to send a log with `WARNING` level.
             All characters still need to be allowed first.
         :param error:
-            If True, raise ValueError when an invalid character is found;
+            If True, raise ParseError when an invalid character is found;
             If False, log with 'ERROR' level.
         :param kwargs: See base classes.
         """
@@ -564,7 +567,7 @@ class ChoiceField(Field):
     def _validate_post(self, val):
         super()._validate_post(val)
         if val not in self.__choices:
-            raise ValueError(f"{val} is not a valid choice: {self.__choices}")
+            raise self.ParseError(f"{val} is not a valid choice: {self.__choices}")
 
 
 class UrlField(CleanTextField):
@@ -608,7 +611,7 @@ class BoolField(Field):
         elif s in self.__false:
             return False
         else:
-            raise ValueError(f"{self.name}: {s} is not true/false")
+            raise self.ParseError(f"{self.name}: {s} is not true/false")
 
 
 class CsvFieldSchema(CsvSchema):
@@ -681,13 +684,13 @@ class CsvFieldSchema(CsvSchema):
                 try:
                     key = header[index]
                 except IndexError:
-                    raise ValueError(f"index {index} not in header")
+                    raise self.SetupError(f"index {index} not in header") from None
             else:
                 key = key_or_index
                 try:
                     index = header.index(key)
                 except ValueError:
-                    raise ValueError(f"'{key}' not in header") from None
+                    raise self.SetupError(f"'{key}' not in header") from None
             field.name = key
             yield index, field
 

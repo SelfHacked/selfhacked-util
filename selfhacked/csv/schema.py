@@ -11,6 +11,9 @@ class Schema(object):
     Subclasses should call super().__init__() at the end of the init function because it will call reset()
     """
 
+    class SetupError(Exception):
+        pass
+
     def __init__(
             self,
             *,
@@ -116,9 +119,9 @@ class CsvSchema(Schema):
 
         if not self.has_header:
             if replace_header is not None:
-                raise ValueError('`replace_header` is set, but `header` is False')
+                raise self.SetupError('`replace_header` is set, but `header` is False')
             if as_dict:
-                raise ValueError('`as_dict` is True, but `header` is False')
+                raise self.SetupError('`as_dict` is True, but `header` is False')
 
         self.__header_actual = None
         super().__init__(**kwargs)
