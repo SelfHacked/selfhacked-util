@@ -243,6 +243,10 @@ class Field(object):
         self._validate_pre(s)
         try:
             val = self._parse(s)
+        except NotImplementedError:
+            raise
+        except self.ParseError:
+            raise
         except Exception as e:
             raise self.ParseError(e) from None
         self._validate_post(val)
