@@ -10,6 +10,8 @@ from .schema import CsvSchema
 
 RAISE = logging.CRITICAL + 10
 
+logger_module = logging.getLogger(__name__)
+
 
 class Field(object):
     """
@@ -141,6 +143,8 @@ class Field(object):
         ))
         if level >= RAISE:
             raise self.ParseError(err)
+        if self._logger is None:
+            return
         if not unique:
             self._logger.log(level, err)
         if (level, msg) in self.__unique_logs:
@@ -635,8 +639,6 @@ class CsvFieldSchema(CsvSchema):
     def __init__(
             self,
             fields: Sequence[Tuple[Union[int, str], Field]],
-            *,
-            logger: Logger,
             **kwargs,
     ):
         """
@@ -652,9 +654,8 @@ class CsvFieldSchema(CsvSchema):
             `as_dict` will be set to False
         """
 
-        kwargs['logger'] = logger
         if 'as_dict' in kwargs:
-            logger.warning('`as_dict` is always False in `CsvFieldSchema`')
+            logger_module.warning('`as_dict` is always False in `CsvFieldSchema`')
         kwargs['as_dict'] = False
         self.__fields = tuple(fields)
         for _, field in self.__fields:

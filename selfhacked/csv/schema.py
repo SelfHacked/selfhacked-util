@@ -17,7 +17,7 @@ class Schema(object):
     def __init__(
             self,
             *,
-            logger: Logger,
+            logger: Logger = None,
     ):
         self.__logger = logger
 
