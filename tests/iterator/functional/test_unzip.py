@@ -10,7 +10,7 @@ from selfhacked.iterator.stream.io import FileStream
     depends=[
         'tests/iterator/test_streams.py::test_file_stream',
         'tests/iterator/test_streams.py::test_or',
-        'tests/iterator/test_tools.py::test_readable_read',
+        'tests/iterator/test_io.py::test_iter',
     ],
 )
 def test_un_gzip(tmpdir):
