@@ -12,6 +12,10 @@ RAISE = logging.CRITICAL + 10
 
 
 class Field(object):
+    """
+    A base field used in CsvFieldSchema
+    """
+
     class SetupError(Exception):
         pass
 
@@ -34,10 +38,27 @@ class Field(object):
             str_replace: Dict[str, str] = None,
             replace: Dict[str, Any] = None,
             type: Type = None,
-            **kwargs,
     ):
-        if kwargs:
-            raise ValueError(f"Invalid parameter(s): {kwargs.keys()}")
+        """
+        :param parent:
+            Parent field, if any.
+            Only needed when creating custom fields that have children.
+        :param name:
+            Give name.
+            If None, name will be extracted from schema.
+        :param none:
+            A collection of strings that should be treated as None.
+        :param warn:
+            A collection of strings which,
+            if the pre-parse value matches one of them,
+            will send a warning.
+        :param str_replace:
+            Replace substrings.
+        :param replace:
+            Replace whole string to a value.
+        :param type:
+            Data type.
+        """
 
         self.__schema: 'CsvFieldSchema' = None
         self.__parent: 'Field' = parent
@@ -272,6 +293,10 @@ class DelimitedField(Field):
 
 
 class ArrayField(DelimitedField):
+    """
+    A field that is an array of underlying fields that have the same type
+    """
+
     def __init__(
             self,
             field: Field,
@@ -299,6 +324,10 @@ class ArrayField(DelimitedField):
 
 
 class ListField(DelimitedField):
+    """
+    A field that is a list of underlying fields that have different types
+    """
+
     MAX_SPLIT = None
     FROM_RIGHT = False
 
@@ -310,6 +339,16 @@ class ListField(DelimitedField):
             from_right: bool = None,
             **kwargs,
     ):
+        """
+        :param fields: A list of fields
+        :param max_split:
+        :param from_right:
+            By default (False), split from the left.
+            If True, split from the right and *reverse the order*,
+            so the rightmost substring will be parsed by the first child field.
+        :param kwargs: See base classes
+        """
+
         super().__init__(**kwargs)
         self.__fields = tuple(fields)
         for field in self.__fields:
@@ -386,6 +425,10 @@ class ListField(DelimitedField):
 
 
 class TextField(Field):
+    """
+    Text field
+    """
+
     TYPE = str
 
 
@@ -398,6 +441,11 @@ class _NumericField(Field):
             comma: bool = None,
             **kwargs,
     ):
+        """
+        :param comma: Allow commas in string
+        :param kwargs: See base class
+        """
+
         comma = self._option('comma', comma, type=bool)
         if comma:
             if 'str_replace' not in kwargs:
@@ -407,14 +455,26 @@ class _NumericField(Field):
 
 
 class IntegerField(_NumericField):
+    """
+    Integer field
+    """
+
     TYPE = int
 
 
 class FloatField(_NumericField):
+    """
+    Float field
+    """
+
     TYPE = float
 
 
 class DateTimeField(Field):
+    """
+    Date/time field
+    """
+
     FORMAT = None
 
     TYPE = time.struct_time
@@ -432,6 +492,10 @@ class DateTimeField(Field):
 
 
 class CleanTextField(TextField):
+    """
+    A text field with a limited character set.
+    """
+
     ALLOWED = None
     WARN_STR = None
     ERROR = None
@@ -446,6 +510,18 @@ class CleanTextField(TextField):
             error: bool = None,
             **kwargs,
     ):
+        """
+        :param allowed:
+            A character set to be allowed in the string.
+        :param warn_str:
+            A substring set to send a log with `WARNING` level.
+            All characters still need to be allowed first.
+        :param error:
+            If True, raise ValueError when an invalid character is found;
+            If False, log with 'ERROR' level.
+        :param kwargs: See base classes.
+        """
+
         super().__init__(**kwargs)
         self.__allowed = self._option('allowed', allowed, type=set)
         self.__warn_str = self._option('warn_str', warn_str, nullable=True, type=set)
@@ -471,6 +547,10 @@ class CleanTextField(TextField):
 
 
 class ChoiceField(Field):
+    """
+    A field with a limited set of choices
+    """
+
     CHOICES = None
 
     def __init__(
@@ -488,11 +568,19 @@ class ChoiceField(Field):
 
 
 class UrlField(CleanTextField):
+    """
+    A field with valid url characters
+    """
+
     ALLOWED = string.ascii_letters + string.digits + './:_-'
     ERROR = True
 
 
 class BoolField(Field):
+    """
+    A boolean field
+    """
+
     TYPE = bool
     TRUE = None
     FALSE = None
@@ -504,6 +592,12 @@ class BoolField(Field):
             false: Collection[str] = None,
             **kwargs,
     ):
+        """
+        :param true: A collection of strings to be considered True.
+        :param false: A collection of strings to be considered False.
+        :param kwargs: See base class.
+        """
+
         super().__init__(**kwargs)
         self.__true = self._option('true', true, type=set)
         self.__false = self._option('false', false, type=set)
@@ -518,6 +612,10 @@ class BoolField(Field):
 
 
 class CsvFieldSchema(CsvSchema):
+    """
+    A csv schema with fields
+    """
+
     class ColumnParseError(Exception):
         def __init__(
                 self,
@@ -547,9 +645,10 @@ class CsvFieldSchema(CsvSchema):
                 (0, IntegerField()),  # the first column is an integer
                 ('uuid', TextField()),  # the column named 'uuid' is a text
             )
-        :param kwargs: See CsvSchema
+        :param kwargs: See base classes
             `as_dict` will be set to False
         """
+
         kwargs['logger'] = logger
         if 'as_dict' in kwargs:
             logger.warning('`as_dict` is always False in `CsvFieldSchema`')

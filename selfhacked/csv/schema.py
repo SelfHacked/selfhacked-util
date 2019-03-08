@@ -79,6 +79,10 @@ class Schema(object):
 
 
 class CsvSchema(Schema):
+    """
+    A text csv schema
+    """
+
     def __init__(
             self,
             *,
@@ -101,7 +105,9 @@ class CsvSchema(Schema):
         :param as_dict:
             If True, return dict with headers as keys - invalid if `header` is False;
             If False (default), return list.
+        :param kwargs: See base class.
         """
+
         self.__delimiter = delimiter
         self.__header = header
         self.__replace_header = replace_header
