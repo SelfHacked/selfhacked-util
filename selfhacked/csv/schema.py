@@ -135,7 +135,7 @@ class CsvSchema(Schema):
         return self.__header is True
 
     @returns(tuple)
-    def replace_header(self, header: Iterable[str]) -> Tuple[str]:
+    def replace_header(self, header: Iterable[str]) -> Tuple[str, ...]:
         if self.__replace_header is None:
             yield from header
             return
@@ -154,7 +154,7 @@ class CsvSchema(Schema):
         self._set_header(self.__header)
 
     @property
-    def header(self) -> List[str]:
+    def header(self) -> Tuple[str, ...]:
         return self.__header_actual
 
     def reset(self):
