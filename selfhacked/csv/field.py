@@ -22,13 +22,20 @@ class Field(object):
         pass
 
     class ParseError(ValueError):
-        pass
+        """
+        Don't raise directly; use self._raise instead
+        """
+
+        def __init__(self, msg: tuple, prepared_msg: str):
+            self.msg = msg
+            super().__init__(prepared_msg)
 
     NONE = None
     WARN = {'NA', 'NR'}
     STR_REPLACE = None
     REPLACE = None
     TYPE = None
+    RAISE = True
 
     def __init__(
             self,
@@ -40,6 +47,7 @@ class Field(object):
             str_replace: Dict[str, str] = None,
             replace: Dict[str, Any] = None,
             type: Type = None,
+            raise_: bool = None,
     ):
         """
         :param parent:
@@ -60,6 +68,9 @@ class Field(object):
             Replace whole string to a value.
         :param type:
             Data type.
+        :param raise_:
+            If True (default), raise error;
+            If False, log error instead.
         """
 
         self.__schema: 'CsvFieldSchema' = None
@@ -72,6 +83,7 @@ class Field(object):
         self.__str_replace = self._option('str_replace', str_replace, nullable=True, type=dict)
         self.__replace = self._option('replace', replace, nullable=True, type=dict)
         self.__type = self._option('type', type, nullable=True)
+        self.__raise = self._option('raise', raise_, type=bool)
 
         self.__unique_logs = set()
 
@@ -124,21 +136,16 @@ class Field(object):
             return None
         return self.schema.logger
 
-    def _log(
-            self,
-            *msg: str,
-            level,
-            unique=False,
-    ):
+    def __prepare_log_msg(self, *msg, unique: bool):
         msg = tuple(
             str(m)
             for m in msg
         )
         if self.schema is None:
-            err = '\t'.join(msg)
+            return msg, '\t'.join(msg)
         else:
             context = self.schema.context
-            err = '\t'.join((
+            return msg, '\t'.join((
                 str(context['lineno']),
                 '[uniq]' if unique else '[all]',
                 context['field'],
@@ -146,39 +153,51 @@ class Field(object):
                 self.name,
                 *msg,
             ))
+
+    def __log(self, msg: tuple, prepared_msg: str, *, level, unique: bool):
         if level >= RAISE:
-            raise self.ParseError(err)
+            raise self.ParseError(msg, prepared_msg)
         if self._logger is None:
             return
         if not unique:
-            self._logger.log(level, err)
+            self._logger.log(level, prepared_msg)
+            return
         if (level, msg) in self.__unique_logs:
             return
         self.__unique_logs.add((level, msg))
-        self._logger.log(level, err)
+        self._logger.log(level, prepared_msg)
 
-    def _info(self, *msg: str, unique=False):
+    def _log(
+            self,
+            *msg,
+            level,
+            unique=False,
+    ):
+        msg, prepared_msg = self.__prepare_log_msg(*msg, unique=unique)
+        self.__log(msg, prepared_msg, level=level, unique=unique)
+
+    def _info(self, *msg, unique=False):
         self._log(
             *msg,
             level=logging.INFO,
             unique=unique,
         )
 
-    def _warn(self, *msg: str, unique=False):
+    def _warn(self, *msg, unique=False):
         self._log(
             *msg,
             level=logging.WARNING,
             unique=unique,
         )
 
-    def _error(self, *msg: str, unique=False):
+    def _error(self, *msg, unique=False):
         self._log(
             *msg,
             level=logging.ERROR,
             unique=unique,
         )
 
-    def _raise(self, *msg: str):
+    def _raise(self, *msg):
         self._log(
             *msg,
             level=RAISE,
@@ -233,7 +252,11 @@ class Field(object):
     def _validate_post(self, val):
         pass
 
-    def parse(self, s: str):
+    @property
+    def raises(self) -> bool:
+        return self.__raise
+
+    def __parse(self, s: str):
         s = self._str_replace(s)
         if not s:
             return None
@@ -248,9 +271,20 @@ class Field(object):
         except self.ParseError:
             raise
         except Exception as e:
-            raise self.ParseError(e) from None
+            return self._raise(s, e)
         self._validate_post(val)
         return val
+
+    def parse(self, s: str):
+        try:
+            return self.__parse(s)
+        except NotImplementedError:
+            raise
+        except self.ParseError as e:
+            if self.raises:
+                raise
+            self._error(*e.msg)
+            return None
 
     def _parse(self, s: str):
         if self.__type is None:
@@ -514,7 +548,6 @@ class CleanTextField(TextField):
 
     ALLOWED = None
     WARN_STR = None
-    ERROR = None
 
     PUNCTUATION_NO_DELIMITER = string.punctuation.replace(',', '').replace(';', '')
 
@@ -523,7 +556,6 @@ class CleanTextField(TextField):
             allowed: Collection[str] = None,
             *,
             warn_str: Collection[str] = None,
-            error: bool = None,
             **kwargs,
     ):
         """
@@ -532,28 +564,23 @@ class CleanTextField(TextField):
         :param warn_str:
             A substring set to send a log with `WARNING` level.
             All characters still need to be allowed first.
-        :param error:
-            If True, raise ParseError when an invalid character is found;
-            If False, log with 'ERROR' level.
         :param kwargs: See base classes.
         """
 
         super().__init__(**kwargs)
         self.__allowed = self._option('allowed', allowed, type=set)
         self.__warn_str = self._option('warn_str', warn_str, nullable=True, type=set)
-        self.__error = self._option('error', error, type=bool)
-
-        if self.__error:
-            self.__invalid = self._raise
-        else:
-            self.__invalid = self._error
 
     def _validate_post(self, s):
         super()._validate_pre(s)
         for c in s:
             if c in self.__allowed:
                 continue
-            self.__invalid(s, f"invalid char '{c}'({ord(c)}) found")
+            msg = f"invalid char '{c}'({ord(c)}) found"
+            if self.raises:
+                self._raise(s, msg)
+            else:
+                self._error(s, msg, unique=True)
 
         if self.__warn_str is not None:
             for substr in self.__warn_str:
@@ -580,7 +607,7 @@ class ChoiceField(Field):
     def _validate_post(self, val):
         super()._validate_post(val)
         if val not in self.__choices:
-            raise self.ParseError(f"{val} is not a valid choice: {self.__choices}")
+            self._raise(val, 'invalid choice', self.__choices)
 
 
 class UrlField(CleanTextField):
@@ -589,7 +616,6 @@ class UrlField(CleanTextField):
     """
 
     ALLOWED = string.ascii_letters + string.digits + './:_-'
-    ERROR = True
 
 
 class BoolField(Field):
@@ -624,7 +650,7 @@ class BoolField(Field):
         elif s in self.__false:
             return False
         else:
-            raise self.ParseError(f"{self.name}: {s} is not true/false")
+            self._raise(s, 'not true/false')
 
 
 class CsvFieldSchema(CsvSchema):

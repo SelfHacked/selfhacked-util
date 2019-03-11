@@ -118,7 +118,6 @@ def test_choice_field():
 def test_clean_text_field():
     field = CleanTextField(
         allowed='abcdefg',
-        error=True,
     )
     assert field.parse('acf') == 'acf'
     with pytest.raises(CleanTextField.ParseError):
@@ -128,7 +127,7 @@ def test_clean_text_field():
 def test_clean_text_field_no_error():
     field = CleanTextField(
         allowed='abcdefg',
-        error=False,
+        raise_=False,
     )
     assert field.parse('acf') == 'acf'
     assert field.parse('h') == 'h'
