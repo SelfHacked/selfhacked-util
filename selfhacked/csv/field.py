@@ -635,11 +635,13 @@ class CsvFieldSchema(CsvSchema):
     class ColumnParseError(Exception):
         def __init__(
                 self,
+                lineno: int,
                 column_name: str,
                 field_type: str,
                 value: str,
         ):
             super().__init__(
+                f"Line {lineno}: "
                 f"Cannot parse column '{column_name}', "
                 f"expected type {field_type}, "
                 f"value: '{value}'"
@@ -728,7 +730,7 @@ class CsvFieldSchema(CsvSchema):
                 self.__current_field_value = value
                 value = field.parse(value)
             except Exception:
-                raise self.ColumnParseError(key, field.type_name, value)
+                raise self.ColumnParseError(self.lineno, key, field.type_name, value)
             yield key, value
 
     @property
