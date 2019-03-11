@@ -203,7 +203,7 @@ class Field(object):
             return default
         if nullable:
             return None
-        self.SetupError(f"Option `{name}` not provided")
+        raise self.SetupError(f"Option `{name}` not provided")
 
     def _is_none(self, s: str) -> bool:
         if self.__none is None:
