@@ -576,17 +576,17 @@ class CleanTextField(TextField):
         for c in s:
             if c in self.__allowed:
                 continue
-            msg = f"invalid char '{c}'({ord(c)}) found"
+            msg = s, 'invalid character', c, ord(c)
             if self.raises:
-                self._raise(s, msg)
+                self._raise(*msg)
             else:
-                self._error(s, msg, unique=True)
+                self._error(*msg, unique=True)
 
         if self.__warn_str is not None:
             for substr in self.__warn_str:
                 if substr not in s:
                     continue
-                self._warn(s, f"warning str '{substr}' found", unique=True)
+                self._warn(s, 'warning str found', substr, unique=True)
 
 
 class ChoiceField(Field):
