@@ -2,6 +2,7 @@ import time
 
 import logging
 import string
+from contextlib import contextmanager
 from logging import Logger
 from typing import List, Collection, Sequence, Dict, Type, Any, Tuple, Iterable, Union, Optional
 
@@ -11,6 +12,39 @@ from .schema import CsvSchema
 RAISE = logging.CRITICAL + 10
 
 logger_module = logging.getLogger(__name__)
+
+
+class FieldOptions(object):
+    def __init__(self):
+        self.__options = {}
+        self.__tmp_stack = []
+
+    def __contains__(self, key: str):
+        return key in self.__options
+
+    def __setitem__(self, key: str, value):
+        if key in self:
+            raise KeyError(f"Option '{key}' already set")
+        self.__options[key] = value
+
+    def __getitem__(self, key: str):
+        for kwargs in self.__tmp_stack:
+            if key in kwargs:
+                return kwargs[key]
+        return self.__options[key]
+
+    @contextmanager
+    def tmp(self, **kwargs):
+        """
+        with options.tmp(option_name=tmp_value):
+            ...
+        """
+
+        self.__tmp_stack.insert(0, kwargs)
+        try:
+            yield
+        finally:
+            self.__tmp_stack.pop(0)
 
 
 class Field(object):
@@ -78,12 +112,14 @@ class Field(object):
         self.__name = name
         self.__name_set = None
 
-        self.__none = self._option('none', none, nullable=True, type=set)
-        self.__warn = self._option('warn', warn, nullable=True, type=set)
-        self.__str_replace = self._option('str_replace', str_replace, nullable=True, type=dict)
-        self.__replace = self._option('replace', replace, nullable=True, type=dict)
-        self.__type = self._option('type', type, nullable=True)
-        self.__raise = self._option('raise', raise_, type=bool)
+        self.__options = FieldOptions()
+
+        self._option('none', none, nullable=True, type=set)
+        self._option('warn', warn, nullable=True, type=set)
+        self._option('str_replace', str_replace, nullable=True, type=dict)
+        self._option('replace', replace, nullable=True, type=dict)
+        self._option('type', type, nullable=True)
+        self._option('raise', raise_, type=bool)
 
         self.__unique_logs = set()
 
@@ -203,8 +239,9 @@ class Field(object):
             level=RAISE,
         )
 
-    def _option(
-            self,
+    @classmethod
+    def _dry_option(
+            cls,
             name: str,
             opt,
             *,
@@ -215,46 +252,67 @@ class Field(object):
             if type is not None:
                 opt = type(opt)
             return opt
-        default = getattr(self, name.upper())
+
+        default = getattr(cls, name.upper())
         if default is not None:
             if type is not None:
                 default = type(default)
             return default
+
         if nullable:
             return None
-        raise self.SetupError(f"Option `{name}` not provided")
+
+        raise cls.SetupError(f"Option `{name}` not provided")
+
+    def _option(
+            self,
+            name: str,
+            opt,
+            *,
+            nullable=False,
+            type=None,
+    ) -> None:
+        self.__options[name] = self._dry_option(
+            name,
+            opt,
+            nullable=nullable,
+            type=type,
+        )
+
+    def _get_option(self, name: str):
+        return self.__options[name]
 
     def _is_none(self, s: str) -> bool:
-        if self.__none is None:
+        none = self._get_option('none')
+        if none is None:
             return False
-        return s in self.__none
+        return s in none
 
     def _str_replace(self, s: str) -> str:
-        if self.__str_replace is None:
+        str_replace = self._get_option('str_replace')
+        if str_replace is None:
             return s
-        for k, v in self.__str_replace.items():
+        for k, v in str_replace.items():
             s = s.replace(k, v)
         return s
 
     def _replace(self, s: str) -> Any:
-        if self.__replace is None:
+        replace = self._get_option('replace')
+        if replace is None:
             return s
-        if s in self.__replace:
-            s = self.__replace[s]
+        if s in replace:
+            s = replace[s]
         return s
 
     def _validate_pre(self, s: str):
-        if self.__warn is None:
+        warn = self._get_option('warn')
+        if warn is None:
             return
-        if s in self.__warn:
+        if s in warn:
             self._warn(s, 'invalid value found', unique=True)
 
     def _validate_post(self, val):
         pass
-
-    @property
-    def raises(self) -> bool:
-        return self.__raise
 
     def __parse(self, s: str):
         s = self._str_replace(s)
@@ -281,15 +339,16 @@ class Field(object):
         except NotImplementedError:
             raise
         except self.ParseError as e:
-            if self.raises:
+            if self._get_option('raise'):
                 raise
             self._error(*e.msg)
             return None
 
     def _parse(self, s: str):
-        if self.__type is None:
+        type = self._get_option('type')
+        if type is None:
             raise NotImplementedError
-        return self.__type(s)
+        return type(s)
 
 
 class DelimitedField(Field):
@@ -307,18 +366,14 @@ class DelimitedField(Field):
     ):
         super().__init__(**kwargs)
 
-        self.__delimiters = self._option('delimiters', delimiters, type=tuple)
-
-        self.__strip_columns = self._option('strip_columns', strip_columns, type=bool)
-
-    @property
-    def _delimiters(self) -> Tuple[str]:
-        return self.__delimiters
+        self._option('delimiters', delimiters, type=tuple)
+        self._option('strip_columns', strip_columns, type=bool)
 
     def _split(self, s: str) -> Iterable[str]:
+        delimiters = self._get_option('delimiters')
         for i in range(len(s)):
             sub = s[i:]
-            for delimiter in self._delimiters:
+            for delimiter in delimiters:
                 if not sub.startswith(delimiter):
                     continue
                 a = s[:i]
@@ -329,7 +384,7 @@ class DelimitedField(Field):
         yield s
 
     def _strip(self, items: Iterable[str]) -> List[str]:
-        if not self.__strip_columns:
+        if not self._get_option('strip_columns'):
             return list(items)
         return [
             item.strip()
@@ -404,16 +459,17 @@ class ListField(DelimitedField):
         for field in self.__fields:
             field.parent = self
 
-        self.__max_split = self._option('max_split', max_split, nullable=True, type=int)
-        self.__from_right = self._option('from_right', from_right, type=bool)
+        self._option('max_split', max_split, nullable=True, type=int)
+        self._option('from_right', from_right, type=bool)
 
     def __split_left(self, s: str, *, max_split=None):
         if max_split == 0:
             yield s
             return
+        delimiters = self._get_option('delimiters')
         for i in range(len(s)):
             sub = s[i:]
-            for delimiter in self._delimiters:
+            for delimiter in delimiters:
                 if not sub.startswith(delimiter):
                     continue
                 a = s[:i]
@@ -430,9 +486,10 @@ class ListField(DelimitedField):
         if max_split == 0:
             yield s
             return
+        delimiters = self._get_option('delimiters')
         for i in range(len(s), 0, -1):
             sub = s[:i]
-            for delimiter in self._delimiters:
+            for delimiter in delimiters:
                 if not sub.endswith(delimiter):
                     continue
                 a = s[i:]
@@ -446,10 +503,12 @@ class ListField(DelimitedField):
         yield s
 
     def _split(self, s: str):
-        if self.__from_right:
-            return self.__split_right(s, max_split=self.__max_split)
+        from_right = self._get_option('from_right')
+        max_split = self._get_option('max_split')
+        if from_right:
+            return self.__split_right(s, max_split=max_split)
         else:
-            return self.__split_left(s, max_split=self.__max_split)
+            return self.__split_left(s, max_split=max_split)
 
     def _parse(self, s: str):
         return [
@@ -496,7 +555,7 @@ class _NumericField(Field):
         :param kwargs: See base class
         """
 
-        comma = self._option('comma', comma, type=bool)
+        comma = self._dry_option('comma', comma, type=bool)
         if comma:
             if 'str_replace' not in kwargs:
                 kwargs['str_replace'] = {}
@@ -535,10 +594,10 @@ class DateTimeField(Field):
             **kwargs,
     ):
         super().__init__(**kwargs)
-        self.__format = self._option('format', format)
+        self._option('format', format)
 
     def _parse(self, s: str):
-        return time.strptime(s, self.__format)
+        return time.strptime(s, self._get_option('format'))
 
 
 class CleanTextField(TextField):
@@ -568,22 +627,26 @@ class CleanTextField(TextField):
         """
 
         super().__init__(**kwargs)
-        self.__allowed = self._option('allowed', allowed, type=set)
-        self.__warn_str = self._option('warn_str', warn_str, nullable=True, type=set)
+        self._option('allowed', allowed, type=set)
+        self._option('warn_str', warn_str, nullable=True, type=set)
 
     def _validate_post(self, s):
         super()._validate_pre(s)
+
+        allowed = self._get_option('allowed')
+        raise_ = self._get_option('raise')
         for c in s:
-            if c in self.__allowed:
+            if c in allowed:
                 continue
             msg = s, 'invalid character', c, ord(c)
-            if self.raises:
+            if raise_:
                 self._raise(*msg)
             else:
                 self._error(*msg, unique=True)
 
-        if self.__warn_str is not None:
-            for substr in self.__warn_str:
+        warn_str = self._get_option('warn_str')
+        if warn_str is not None:
+            for substr in warn_str:
                 if substr not in s:
                     continue
                 self._warn(s, 'warning str found', substr, unique=True)
@@ -602,12 +665,13 @@ class ChoiceField(Field):
             **kwargs,
     ):
         super().__init__(**kwargs)
-        self.__choices = self._option('choices', choices, type=set)
+        self._option('choices', choices, type=set)
 
     def _validate_post(self, val):
         super()._validate_post(val)
-        if val not in self.__choices:
-            self._raise(val, 'invalid choice', self.__choices)
+        choices = self._get_option('choices')
+        if val not in choices:
+            self._raise(val, 'invalid choice', choices)
 
 
 class UrlField(CleanTextField):
@@ -641,13 +705,13 @@ class BoolField(Field):
         """
 
         super().__init__(**kwargs)
-        self.__true = self._option('true', true, type=set)
-        self.__false = self._option('false', false, type=set)
+        self._option('true', true, type=set)
+        self._option('false', false, type=set)
 
     def _parse(self, s: str):
-        if s in self.__true:
+        if s in self._get_option('true'):
             return True
-        elif s in self.__false:
+        elif s in self._get_option('false'):
             return False
         else:
             self._raise(s, 'not true/false')
