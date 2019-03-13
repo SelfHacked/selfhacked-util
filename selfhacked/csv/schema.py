@@ -48,17 +48,29 @@ class Schema(object):
         self.__line = None
 
     def read_line(self, line: str) -> Optional:
+        """
+        Read one line and return the result if it's a data line
+        """
         self.__line = line
         self.__lineno += 1
         return self._read_line()
 
-    def read_file(self, lines: Iterable[str]) -> Iterator:
-        self.reset()
+    def read_lines(self, lines: Iterable[str]) -> Iterator:
+        """
+        Read multiple lines and return the results
+        """
         for line in lines:
             result = self.read_line(line)
             if result is None:
                 continue
             yield result
+
+    def read_file(self, lines: Iterable[str]) -> Iterator:
+        """
+        Read a new file
+        """
+        self.reset()
+        yield from self.read_lines(lines)
 
     def _read_line(self) -> Optional:
         if self._is_header_line:
