@@ -614,8 +614,6 @@ class CleanTextField(TextField):
     ALLOWED = None
     WARN_STR = None
 
-    PUNCTUATION_NO_DELIMITER = string.punctuation.replace(',', '').replace(';', '')
-
     def __init__(
             self,
             allowed: Collection[str] = None,
