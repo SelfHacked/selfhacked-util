@@ -427,6 +427,12 @@ class ArrayField(DelimitedField):
             for item in super()._parse(s)
         ]
 
+    @staticmethod
+    def array_length(val):
+        if val is None:
+            return 0
+        return len(val)
+
 
 class ListField(DelimitedField):
     """

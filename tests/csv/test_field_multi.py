@@ -52,6 +52,12 @@ def test_strip_column():
     assert field2.parse('a, b') == ['a', ' b']
 
 
+def test_array_length():
+    assert ArrayField.array_length(None) == 0
+    assert ArrayField.array_length([]) == 0
+    assert ArrayField.array_length([1, 2]) == 2
+
+
 @pytest.mark.dependency(
     depends=[
         ('session', 'tests/csv/test_field_basic.py::test_numeric'),
