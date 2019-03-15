@@ -20,6 +20,9 @@ class FieldOptions(object):
         self.__tmp_stack = []
 
     def __contains__(self, key: str):
+        for kwargs in self.__tmp_stack:
+            if key in kwargs:
+                return True
         return key in self.__options
 
     def __setitem__(self, key: str, value):
