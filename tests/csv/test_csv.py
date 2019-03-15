@@ -3,6 +3,13 @@ import pytest
 from selfhacked.csv.schema import CsvSchema
 
 
+def test_setup_error():
+    with pytest.raises(CsvSchema.SetupError):
+        schema = CsvSchema(header=False, replace_header={'X': 'x'})
+    with pytest.raises(CsvSchema.SetupError):
+        schema = CsvSchema(header=False, as_dict=True)
+
+
 def test_read_header():
     schema = CsvSchema()
     assert schema.header is None
@@ -24,6 +31,12 @@ def test_no_header():
     assert schema.header is None
 
 
+def test_replace_header():
+    schema = CsvSchema(header=True, replace_header={'X': 'x'})
+    schema.read_line('X,y')
+    assert schema.header == ('x', 'y')
+
+
 def test_read_list():
     schema = CsvSchema(header=False)
     assert schema.read_line('1,2') == ['1', '2']
@@ -38,6 +51,7 @@ def test_read_dict():
         as_dict=True,
     )
     assert schema.read_line('1,2') == {'a': '1', 'b': '2'}
+    assert schema.read_line('3') == {'a': '3', 'b': None}
 
 
 @pytest.mark.dependency(

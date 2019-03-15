@@ -22,7 +22,6 @@ class Schema(object):
         self.__logger = logger
 
         self.__lineno = None
-        self.__line_type = None
         self.__line = None
         self.reset()
 
@@ -35,16 +34,11 @@ class Schema(object):
         return self.__lineno
 
     @property
-    def _line_type(self) -> Optional[str]:
-        return self.__line_type
-
-    @property
     def _line(self) -> str:
         return self.__line
 
     def reset(self) -> None:
         self.__lineno = -1
-        self.__line_type = None
         self.__line = None
 
     def read_line(self, line: str) -> Optional:
@@ -80,17 +74,17 @@ class Schema(object):
 
     @property
     def _is_header_line(self) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def _read_header_line(self) -> None:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     @property
     def _is_data_line(self) -> bool:
-        return not self._is_header_line
+        return not self._is_header_line  # pragma: no cover
 
     def _read_data_line(self) -> Any:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class CsvSchema(Schema):
@@ -172,10 +166,6 @@ class CsvSchema(Schema):
     def reset(self):
         self._reset_header()
         super().reset()
-
-    @property
-    def _is_info_line(self):
-        return False
 
     @property
     def _is_header_line(self):
