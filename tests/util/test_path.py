@@ -10,6 +10,12 @@ def test_mkdir(tmpdir):
     assert os.path.isdir(os.path.join(path, 'a', 'b', 'c'))
 
 
+def test_file(tmpdir):
+    (tmpdir / '0').write('abc')
+    with pytest.raises(ValueError):
+        mkdir(str(tmpdir), '0')
+
+
 def test_cd(tmpdir):
     os.chdir(str(tmpdir))
     path = os.path.abspath(os.getcwd())

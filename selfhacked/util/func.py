@@ -18,7 +18,7 @@ class returns(object):
 
 class _BaseTimed(object):
     def _callback(self, func, dt: float):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __call__(self, func):
         @wraps(func)

@@ -37,6 +37,9 @@ def test_prefetch_all():
 
 
 def test_timeout():
+    iterator = ThreadedPrefetchAllIterator(dummy_iterable(), timeout=1)
+    tuple(iterator)
+
     iterator = ThreadedPrefetchAllIterator(dummy_iterable(), timeout=0)
     with pytest.raises(iterator.Timeout):
         next(iterator)

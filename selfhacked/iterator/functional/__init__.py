@@ -5,7 +5,7 @@ Function = Callable[[Iterable[T_co]], Iterator[V_co]]
 
 class _BaseOneToOneFunction(Function[T_co, V_co]):
     def _call(self, item):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __call__(self, iterable: Iterable[T_co]) -> Iterator[V_co]:
         for item in iterable:
@@ -29,7 +29,7 @@ class apply(_BaseOneToOneFunction[T_co, V_co]):
 
 class _BaseFilter(Function[T_co, T_co]):
     def _match(self, item) -> bool:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
         for item in iterable:

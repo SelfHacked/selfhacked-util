@@ -9,7 +9,7 @@ class Stream(Iterable[T_co]):
         pass
 
     def _iter(self) -> Iterator[T_co]:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __iter__(self):
         self._open()

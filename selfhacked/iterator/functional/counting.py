@@ -8,10 +8,10 @@ class _BaseReport(Function[T_co, T_co]):
         self.__interval = interval
 
     def _interval_callback(self, n: int):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def _finish_callback(self, n: int):
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
         count = 0
@@ -31,7 +31,7 @@ class report(_BaseReport[T_co]):
 
     @staticmethod
     def none(n: int):
-        pass
+        pass  # pragma: no cover
 
     def __init__(
             self,
