@@ -5,3 +5,5 @@ omit =
     selfhacked/aws/*
     # django
     selfhacked/common/*
+    # string constants
+    selfhacked/string.py
