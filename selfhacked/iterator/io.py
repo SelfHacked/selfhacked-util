@@ -82,6 +82,8 @@ class BytesIterableAsIO(BinaryIO):
             if offset < self.__pointer:
                 raise self.ERROR
             offset = self.__pointer + offset
+        if offset < 0:
+            raise self.ERROR
         self.__read(n=offset)
 
     def truncate(self, size: int = None):
@@ -128,4 +130,4 @@ class BytesIterableAsIO(BinaryIO):
         raise self.ERROR
 
     def flush(self) -> None:
-        pass
+        raise self.ERROR

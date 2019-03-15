@@ -8,6 +8,18 @@ def get() -> BytesIterableAsIO:
     return BytesIterableAsIO([b'123\n45\n\n6\n'])
 
 
+def test_readonly():
+    f = get()
+    assert f.readable()
+    assert not f.writable()
+    with pytest.raises(OSError):
+        f.write(b'0')
+    with pytest.raises(OSError):
+        f.writelines([b'1', b'2'])
+    with pytest.raises(OSError):
+        f.flush()
+
+
 def test_read():
     f = get()
     assert f.read(0) == b''
@@ -52,6 +64,24 @@ def test_tell():
     assert f.tell() == 10
 
 
+def test_seekable():
+    f = get()
+    assert f.seekable()
+    with pytest.raises(OSError):
+        f.truncate()
+
+
+def test_seek_forward_only():
+    f = get()
+    with pytest.raises(OSError):
+        f.seek(0, 2)
+    f.seek(2)
+    with pytest.raises(OSError):
+        f.seek(0, 0)
+    with pytest.raises(OSError):
+        f.seek(-1, 1)
+
+
 @pytest.mark.dependency(
     depends=[
         'test_read',
@@ -66,3 +96,17 @@ def test_seek():
     f.seek(2, SEEK_CUR)
     assert f.tell() == 5
     assert f.read(1) == b'5'
+
+
+def test_os():
+    f = get()
+    assert f.mode == 'rb'
+    assert not f.closed
+    with pytest.raises(OSError):
+        f.fileno()
+    assert not f.isatty()
+
+
+def test_with():
+    with get() as f:
+        pass
