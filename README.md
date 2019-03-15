@@ -14,6 +14,10 @@
 
     Push your own branch and tests will run on [Travis](https://travis-ci.com/).
 
+* Test Coverage
+
+        pytest --cov
+
 ## Using this project
 
 * Development version:
