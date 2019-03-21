@@ -136,7 +136,7 @@ class Field(object):
         self._set_children_schema(val)
 
     def _set_children_schema(self, val: 'CsvFieldSchema'):
-        pass
+        pass  # pragma: no cover
 
     @property
     def parent(self) -> 'Field':
@@ -163,7 +163,7 @@ class Field(object):
         self._set_children_name(val)
 
     def _set_children_name(self, val: str):
-        pass
+        pass  # pragma: no cover
 
     @property
     def type_name(self) -> str:
