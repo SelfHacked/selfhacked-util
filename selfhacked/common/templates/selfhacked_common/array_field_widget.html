@@ -1,0 +1,19 @@
+<style>
+    .arrayfield-values {
+        float: left;
+    }
+
+    .arrayfield-value > input[type=text] {
+        width: 260px;
+    }
+</style>
+
+{% spaceless %}
+    <div class="arrayfield-values">
+        {% for widget in widget.subwidgets %}
+            <div class="arrayfield-value">
+                {% include widget.template_name %}
+            </div>
+        {% endfor %}
+    </div>
+{% endspaceless %}

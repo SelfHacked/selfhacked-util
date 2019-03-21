@@ -7,6 +7,12 @@ __pycache__/
 
 # Venv
 venv/
+.venv/
+
+# Pipenv
+# We use setup.py to specify dependencies
+Pipfile
+Pipfile.lock
 
 # Pip
 dist/
@@ -15,6 +21,7 @@ dist/
 # PyTest
 .eggs/
 .pytest_cache/
+.coverage
 
 # Mac
 .DS_Store

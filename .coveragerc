@@ -1,0 +1,9 @@
+[run]
+source = selfhacked
+omit =
+    # aws
+    selfhacked/aws/*
+    # django
+    selfhacked/common/*
+    # string constants
+    selfhacked/string.py
