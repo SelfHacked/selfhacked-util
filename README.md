@@ -10,38 +10,52 @@ See [`.coveragerc`](.coveragerc) for details.
 
 * Setting up:
 
-        pip install -e .[dev]
+    ```bash
+    pip install -e .[dev]
+    ```
 
 * Testing:
 
     Local testing:
 
-        pytest
+    ```bash
+    pytest
+    ```
 
     Push your own branch and tests will run on [Travis](https://travis-ci.com/).
 
 * Test Coverage
 
-        pytest --cov
+    ```bash
+    pytest --cov
+    ```
 
     To see lines not covered in tests,
 
-        pytest --cov --cov-report term-missing
+    ```bash
+    pytest --cov --cov-report term-missing
+    ```
 
 ## Using this project
 
 * Development version:
 
-        pip install -e .
+    ```bash
+    pip install -e .
+    ```
 
 * GitHub version:
 
-        pip install git+git://github.com/SelfHacked/selfhacked-util.git#egg=selfhacked-util
+    ```bash
+    pip install git+git://github.com/SelfHacked/selfhacked-util.git#egg=selfhacked-util
+    ```
 
     Installs from the `master` branch by default.
     To specify a branch/tag/commit,
 
-        pip install git+git://github.com/SelfHacked/selfhacked-util.git@{ref}#egg=selfhacked-util
+    ```bash
+    pip install git+git://github.com/SelfHacked/selfhacked-util.git@{ref}#egg=selfhacked-util
+    ```
 
 * Installing extras
 
