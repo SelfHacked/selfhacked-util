@@ -1,4 +1,5 @@
 import logging
+
 from django.db import connection
 
 from selfhacked.util.func import timed

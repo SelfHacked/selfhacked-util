@@ -1,7 +1,6 @@
-import time
-
 import logging
 import string
+import time
 from contextlib import contextmanager
 from logging import Logger
 from typing import List, Collection, Sequence, Dict, Type, Any, Tuple, Iterable, Union, Optional

@@ -1,4 +1,5 @@
 import gzip
+
 import pytest
 
 from selfhacked.iterator.bytes import un_gzip

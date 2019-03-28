@@ -1,8 +1,9 @@
-import boto3
 import tempfile
-from botocore.response import StreamingBody
 from io import BytesIO
 from typing import Iterator, BinaryIO
+
+import boto3
+from botocore.response import StreamingBody
 
 from selfhacked.stream import Stream, IterStream
 

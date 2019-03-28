@@ -1,5 +1,6 @@
-import pytest
 from io import SEEK_CUR
+
+import pytest
 
 from selfhacked.io import BytesIterableAsIO
 
