@@ -1,4 +1,4 @@
-from selfhacked.iterator.functional.bytes import decode
+from selfhacked.iterator.bytes import decode
 
 
 def test_decode():

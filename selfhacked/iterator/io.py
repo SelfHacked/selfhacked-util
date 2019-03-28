@@ -2,7 +2,7 @@ from io import SEEK_SET, SEEK_END
 from typing import Iterable, Iterator, BinaryIO, List
 
 from selfhacked.util.func import returns
-from .functional import yield_from
+from . import yield_from
 
 
 class BytesIterableAsIO(BinaryIO):

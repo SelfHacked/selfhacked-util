@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.iterator.functional import remove_empty, yield_from, filter
+from selfhacked.iterator import remove_empty, yield_from, filter
 
 
 def test_filter():

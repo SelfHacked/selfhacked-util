@@ -1,4 +1,4 @@
-from selfhacked.iterator.functional.strings import strip, remove_comments, split_lines
+from selfhacked.iterator.strings import strip, remove_comments, split_lines
 
 
 def test_strip(tmpdir):

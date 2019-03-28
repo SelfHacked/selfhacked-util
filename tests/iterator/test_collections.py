@@ -1,4 +1,4 @@
-from selfhacked.iterator.functional.collections import getitem
+from selfhacked.iterator.collections import getitem
 
 
 def test_getitem():

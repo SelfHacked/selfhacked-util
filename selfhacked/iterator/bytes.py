@@ -2,7 +2,7 @@ import gzip
 from typing import Iterable, Iterator
 
 from . import apply, Function
-from ..io import BytesIterableAsIO
+from .io import BytesIterableAsIO
 
 decode: Function[bytes, str] = apply(bytes.decode, encoding='utf-8')
 

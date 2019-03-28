@@ -1,12 +1,12 @@
 from functools import wraps
 from typing import Union, Type, Callable
 
-from selfhacked.iterator.functional import (
+from selfhacked.iterator import (
     Function,
     filter as _filter,
     remove_empty as _remove_empty,
 )
-from selfhacked.iterator.functional.counting import (
+from selfhacked.iterator.counting import (
     report as _report,
     log as _log,
 )

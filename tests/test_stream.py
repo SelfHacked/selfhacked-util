@@ -1,7 +1,7 @@
 import pytest
 
-from selfhacked.iterator.functional import remove_empty, apply
-from selfhacked.iterator.functional.strings import strip, remove_comments
+from selfhacked.iterator import remove_empty, apply
+from selfhacked.iterator.strings import strip, remove_comments
 from selfhacked.stream import IterStream, Stream
 from selfhacked.stream.io import InputStream, FileStream
 
@@ -63,9 +63,9 @@ def test_call():
     depends=[
         'test_or',
         'test_file_stream',
-        ('session', 'tests/iterator/functional/test_strings.py::test_strip'),
-        ('session', 'tests/iterator/functional/test_functional.py::test_remove_empty'),
-        ('session', 'tests/iterator/functional/test_strings.py::test_remove_comments'),
+        ('session', 'tests/iterator/test_strings.py::test_strip'),
+        ('session', 'tests/iterator/test_base.py::test_remove_empty'),
+        ('session', 'tests/iterator/test_strings.py::test_remove_comments'),
     ],
 )
 def test_chain(tmpdir):
