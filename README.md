@@ -1,5 +1,11 @@
 # SelfHacked Util
 
+[![Build Status](https://travis-ci.com/SelfHacked/selfhacked-util.svg?branch=master)](https://travis-ci.com/SelfHacked/selfhacked-util)
+[![Coverage Status](https://coveralls.io/repos/github/SelfHacked/selfhacked-util/badge.svg?branch=master)](https://coveralls.io/github/SelfHacked/selfhacked-util?branch=master)
+
+Note: Some files are not included in coverage.
+See [`.coveragerc`](.coveragerc) for details.
+
 ## Developing this project
 
 * Setting up:
