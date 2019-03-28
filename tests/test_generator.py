@@ -1,6 +1,6 @@
 import pytest
 
-from selfhacked.iterator.generators import partial, report, log, remove_empty
+from selfhacked.generator import partial, report, log, remove_empty
 
 
 def test_partial():
