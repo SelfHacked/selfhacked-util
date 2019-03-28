@@ -1,7 +1,7 @@
 import pytest
 from io import SEEK_CUR
 
-from selfhacked.iterator.io import BytesIterableAsIO
+from selfhacked.io import BytesIterableAsIO
 
 
 def get() -> BytesIterableAsIO:

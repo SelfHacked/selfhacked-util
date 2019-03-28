@@ -1,8 +1,8 @@
 import gzip
 from typing import Iterable, Iterator
 
+from selfhacked.io import BytesIterableAsIO
 from . import apply, Function
-from .io import BytesIterableAsIO
 
 decode: Function[bytes, str] = apply(bytes.decode, encoding='utf-8')
 
