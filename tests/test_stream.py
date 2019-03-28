@@ -2,8 +2,8 @@ import pytest
 
 from selfhacked.iterator.functional import remove_empty, apply
 from selfhacked.iterator.functional.strings import strip, remove_comments
-from selfhacked.iterator.stream import IterStream, Stream
-from selfhacked.iterator.stream.io import InputStream, FileStream
+from selfhacked.stream import IterStream, Stream
+from selfhacked.stream.io import InputStream, FileStream
 
 
 def test_iter_stream():

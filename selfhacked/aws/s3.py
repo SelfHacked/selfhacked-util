@@ -4,7 +4,7 @@ from botocore.response import StreamingBody
 from io import BytesIO
 from typing import Iterator, BinaryIO
 
-from selfhacked.iterator.stream import Stream, IterStream
+from selfhacked.stream import Stream, IterStream
 
 
 class S3File(object):

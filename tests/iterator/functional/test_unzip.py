@@ -2,14 +2,14 @@ import gzip
 import pytest
 
 from selfhacked.iterator.functional.bytes import un_gzip
-from selfhacked.iterator.stream.io import FileStream
+from selfhacked.stream.io import FileStream
 
 
 @pytest.mark.dependency(
     scope='session',
     depends=[
-        'tests/iterator/test_streams.py::test_file_stream',
-        'tests/iterator/test_streams.py::test_or',
+        'tests/test_stream.py::test_file_stream',
+        'tests/test_stream.py::test_or',
         'tests/iterator/test_io.py::test_iter',
     ],
 )
