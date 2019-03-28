@@ -36,17 +36,12 @@ See [`.coveragerc`](.coveragerc) for details.
 
 * GitHub version:
 
-    In `requirements.txt`
+        pip install git+git://github.com/SelfHacked/selfhacked-util.git#egg=selfhacked-util
 
-        git+git://github.com/SelfHacked/selfhacked-util.git
+    Installs from the `master` branch by default.
+    To specify a branch/tag/commit,
 
-    The branch is `master` by default.
-    To specify a branch,
-
-        git+git://github.com/SelfHacked/selfhacked-util.git@{branch}
-
-    If the egg fragment is required (e.g. using `pipenv`),
-    it should be `selfhacked-util` (the `name` argument in `setup.py`).
+        pip install git+git://github.com/SelfHacked/selfhacked-util.git@{ref}#egg=selfhacked-util
 
 * Installing extras
 
