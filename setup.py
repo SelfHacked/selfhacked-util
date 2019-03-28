@@ -17,6 +17,10 @@ extra_test = [
 ]
 extra_dev = extra_all + extra_test
 
+extra_ci = extra_test + [
+    'python-coveralls',
+]
+
 setup(
     name='selfhacked-util',
 
@@ -32,6 +36,8 @@ setup(
 
         'test': extra_test,
         'dev': extra_dev,
+
+        'ci': extra_ci,
     },
 
     packages=find_packages(),

@@ -4,5 +4,8 @@ python:
 
 script:
   - pip install -U pip setuptools
-  - pip install -e .[test]
-  - pytest
+  - pip install -e .[ci]
+  - pytest --cov --cov-report term
+
+after_success:
+  - coveralls
