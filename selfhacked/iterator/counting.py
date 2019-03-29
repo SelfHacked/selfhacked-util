@@ -1,11 +1,13 @@
 from typing import Callable, Iterable, Iterator
 
-from .typing import Function, T_co
+from .typing import T_co
+from .util import _BaseOneToOneFunction
 
 
-class _BaseReport(Function[T_co, T_co]):
+class _BaseReport(_BaseOneToOneFunction[T_co, T_co]):
     def __init__(self, *, interval=1000):
         self.__interval = interval
+        self.__count = 0
 
     def _interval_callback(self, n: int):
         raise NotImplementedError  # pragma: no cover
@@ -13,15 +15,15 @@ class _BaseReport(Function[T_co, T_co]):
     def _finish_callback(self, n: int):
         raise NotImplementedError  # pragma: no cover
 
-    def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
-        count = 0
-        for item in iterable:
-            count += 1
-            if count % self.__interval == 0:
-                self._interval_callback(count)
-            yield item
+    def _call(self, item):
+        self.__count += 1
+        if self.__count % self.__interval == 0:
+            self._interval_callback(self.__count)
+        return item
 
-        self._finish_callback(count)
+    def __call__(self, iterable: Iterable[T_co]) -> Iterator[T_co]:
+        yield from super().__call__(iterable)
+        self._finish_callback(self.__count)
 
 
 class report(_BaseReport[T_co]):
