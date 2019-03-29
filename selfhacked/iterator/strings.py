@@ -1,10 +1,12 @@
 from typing import Iterable, Iterator
 
-from . import apply, filter, Function
+from .filter import filter_
+from .typing import Function
+from .util import apply_each
 
-strip: Function[str, str] = apply(str.strip)
+strip: Function[str, str] = apply_each(str.strip)
 
-remove_comments: filter[str] = ~filter(str.startswith, '#')
+remove_comments: filter_[str] = ~filter_(str.startswith, '#')
 
 
 def split_lines(iterable: Iterable[str]) -> Iterator[str]:

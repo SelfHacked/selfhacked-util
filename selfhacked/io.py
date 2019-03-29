@@ -1,7 +1,7 @@
 from io import SEEK_SET, SEEK_END
 from typing import Iterable, Iterator, BinaryIO, List
 
-from selfhacked.iterator import yield_from
+from selfhacked.iterator.collections import yield_from
 from selfhacked.util.func import returns
 
 

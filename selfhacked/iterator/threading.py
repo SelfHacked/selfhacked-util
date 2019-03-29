@@ -1,7 +1,8 @@
 import time
-
 from threading import Thread
-from typing import Iterator, T_co
+from typing import Iterator
+
+from .typing import T_co
 
 
 class ThreadedPrefetchOneIterator(Iterator[T_co]):

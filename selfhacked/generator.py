@@ -1,15 +1,15 @@
 from functools import wraps
 from typing import Union, Type, Callable
 
-from selfhacked.iterator import (
-    Function,
-    filter as _filter,
-    remove_empty as _remove_empty,
-)
 from selfhacked.iterator.counting import (
     report as _report,
     log as _log,
 )
+from selfhacked.iterator.filter import (
+    filter_ as _filter,
+    remove_empty as _remove_empty,
+)
+from selfhacked.iterator.typing import Function
 
 
 class partial(object):
@@ -85,7 +85,7 @@ class functional(object):
             return self.__new_func()(args[0])
 
 
-filter = functional(_filter, has_params=True)
+filter_ = functional(_filter, has_params=True)
 
 remove_empty = functional(_remove_empty, has_params=False)
 

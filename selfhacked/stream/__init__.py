@@ -1,4 +1,6 @@
-from typing import Iterator, Iterable, T_co
+from typing import Iterator, Iterable
+
+from selfhacked.iterator.typing import T_co
 
 
 class Stream(Iterable[T_co]):

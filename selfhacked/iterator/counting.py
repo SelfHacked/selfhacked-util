@@ -1,6 +1,6 @@
-from typing import Callable, Iterable, Iterator, T_co
+from typing import Callable, Iterable, Iterator
 
-from . import Function
+from .typing import Function, T_co
 
 
 class _BaseReport(Function[T_co, T_co]):

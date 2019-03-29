@@ -1,6 +1,14 @@
-from typing import Any, Collection
+from typing import Any, Collection, Iterable, Iterator
 
-from . import _BaseOneToOneFunction
+from .util import _BaseOneToOneFunction
+
+
+def yield_from(iterable: Iterable[Iterable]) -> Iterator:
+    """
+    Unpack a series of iterables into one iterable.
+    """
+    for item in iterable:
+        yield from item
 
 
 class getitem(_BaseOneToOneFunction[Collection, Any]):

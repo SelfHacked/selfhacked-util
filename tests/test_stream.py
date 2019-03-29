@@ -1,7 +1,8 @@
 import pytest
 
-from selfhacked.iterator import remove_empty, apply
+from selfhacked.iterator.filter import remove_empty
 from selfhacked.iterator.strings import strip, remove_comments
+from selfhacked.iterator.util import apply_each
 from selfhacked.stream import IterStream, Stream
 from selfhacked.stream.io import InputStream, FileStream
 
@@ -54,7 +55,7 @@ def test_gt():
 def test_call():
     s = IterStream('abc')
     li = []
-    s2 = s | apply(li.append)
+    s2 = s | apply_each(li.append)
     s2()
     assert li == ['a', 'b', 'c']
 

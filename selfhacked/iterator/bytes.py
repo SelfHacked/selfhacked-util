@@ -2,9 +2,10 @@ import gzip
 from typing import Iterable, Iterator
 
 from selfhacked.io import BytesIterableAsIO
-from . import apply, Function
+from .typing import Function
+from .util import apply_each
 
-decode: Function[bytes, str] = apply(bytes.decode, encoding='utf-8')
+decode: Function[bytes, str] = apply_each(bytes.decode, encoding='utf-8')
 
 
 def un_gzip(iterable: Iterable[bytes]) -> Iterator[str]:
