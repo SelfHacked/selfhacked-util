@@ -8,4 +8,4 @@ Function = Callable[[Iterable[T_co]], Iterator[V_co]]
 
 class _BaseParamFunction(Function[T_co, V_co]):
     def __call__(self, iterable: Iterable[T_co]) -> Iterator[V_co]:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover

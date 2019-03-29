@@ -5,7 +5,7 @@ from selfhacked.iterator.typing import T_co
 
 class Stream(Iterator[T_co]):
     def __next__(self) -> T_co:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def __or__(self, other) -> 'Stream':
         """
