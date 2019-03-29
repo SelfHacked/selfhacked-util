@@ -3,7 +3,7 @@ import pytest
 from selfhacked.iterator.filter import remove_empty
 from selfhacked.iterator.strings import strip, remove_comments
 from selfhacked.iterator.util import apply_each
-from selfhacked.stream import IterStream, Stream
+from selfhacked.stream import Stream, IterStream
 from selfhacked.stream.io import InputStream, FileStream
 
 

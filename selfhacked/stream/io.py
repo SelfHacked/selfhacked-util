@@ -1,32 +1,26 @@
 from typing import Union
 
-from . import Stream
+from . import Stream, BaseIterStream
 
 
 class InputStream(Stream[str]):
-    def _iter(self):
+    def __next__(self) -> str:
         try:
-            while True:
-                yield input()
+            return input()
         except EOFError:
-            return
+            raise StopIteration
 
 
-class FileStream(Stream[Union[str, bytes]]):
+class FileStream(BaseIterStream[Union[str, bytes]]):
     def __init__(self, name, *, binary=False):
+        super().__init__()
         self.__name = name
         self.__binary = binary
-        self.__f = None
 
     @property
     def __mode(self):
         return 'rb' if self.__binary else 'r'
 
-    def _open(self):
-        self.__f = open(self.__name, self.__mode)
-
-    def _close(self):
-        self.__f.close()
-
-    def _iter(self):
-        yield from self.__f
+    def _iterable(self):
+        with open(self.__name, self.__mode) as f:
+            yield from f

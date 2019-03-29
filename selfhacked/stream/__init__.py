@@ -3,22 +3,9 @@ from typing import Iterator, Iterable
 from selfhacked.iterator.typing import T_co
 
 
-class Stream(Iterable[T_co]):
-    def _open(self):
-        pass
-
-    def _close(self):
-        pass
-
-    def _iter(self) -> Iterator[T_co]:
-        raise NotImplementedError  # pragma: no cover
-
-    def __iter__(self):
-        self._open()
-        try:
-            yield from self._iter()
-        finally:
-            self._close()
+class Stream(Iterator[T_co]):
+    def __next__(self) -> T_co:
+        raise NotImplementedError
 
     def __or__(self, other) -> 'Stream':
         """
@@ -42,9 +29,23 @@ class Stream(Iterable[T_co]):
             pass
 
 
-class IterStream(Stream[T_co]):
-    def __init__(self, iterable: Iterable):
-        self.__iter = iterable
+class BaseIterStream(Stream[T_co]):
+    def __init__(self):
+        self.__iter: Iterator[T_co] = None
 
-    def _iter(self):
-        yield from self.__iter
+    def _iterable(self) -> Iterable[T_co]:
+        raise NotImplementedError  # pragma: no cover
+
+    def __next__(self) -> T_co:
+        if self.__iter is None:
+            self.__iter = iter(self._iterable())
+        return next(self.__iter)
+
+
+class IterStream(BaseIterStream[T_co]):
+    def __init__(self, iterable: Iterable):
+        super().__init__()
+        self.__iterable = iterable
+
+    def _iterable(self) -> Iterable[T_co]:
+        return self.__iterable
